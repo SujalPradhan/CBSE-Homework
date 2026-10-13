@@ -1,6 +1,9 @@
-// Five homework assignments for CBSE Grades 6–8. Each is built on an activity in the current NCERT textbooks.
-// Student pages read: intro, materials, steps, together, questions. Feedback runs in the browser and never gives the answer.
+// Five homework assignments for CBSE Grades 6–8, each built on a passage in the current NCERT textbooks.
+// book.sections hold the textbook passages, quoted exactly (fractions and ligatures cleaned up from the PDF text).
+// A question's `ref` is an exact phrase from those passages; book.html opens the passage and highlights it.
 // Teacher notes (answer key, rubric) are in teacher-notes.js, loaded only by teacher.html.
+
+const NCERT = code => `https://ncert.nic.in/textbook/pdf/${code}.pdf`;
 
 const ASSIGNMENTS = [
   {
@@ -10,7 +13,24 @@ const ASSIGNMENTS = [
     concept: 'Why we need standard units of length',
     objective: 'Explain why measurements in body units (handspans) differ between people, and why a standard unit (cm) gives everyone the same answer.',
     pattern: 'Household measurement · Compare across people',
-    intro: 'In your textbook, five friends measured one table with their hands and got different answers. Will that happen in your home too?',
+    intro: 'In your textbook, five friends measured the same classroom table with their handspans and got five different answers. Will that happen in your home too?',
+    why: 'Tailors, carpenters and shopkeepers in India once measured with hands and arms (a handspan is called a balisht or bitta). If a cloth seller measures with her hand, how much cloth you get depends on her hand. This task shows you why the whole world agreed on centimetres and metres.',
+    book: {
+      title: 'Curiosity, Grade 6 · Chapter 5', pdf: NCERT('fecu105'),
+      sections: [
+        { page: 2, printed: 80, heading: 'Measuring with body parts', paras: [
+          'Deepa says, “Let us use our handspan. I will show you how to use it (Fig. 5.1). I have seen my mother using it. She calls it balisht.”',
+        ] },
+        { page: 3, printed: 81, heading: 'Why the numbers were different', paras: [
+          'Padma says, “Oh, the number of handspans is different for all of us. So, what can we say about the length of the table?”',
+          '“But why should the number be different?” Hardeep asked thoughtfully.',
+          'Tasneem says, “I can guess. Our handspans are of different sizes.”',
+          'Deepa says thoughtfully, “No wonder people use scales and measuring tapes.”',
+          'However, handspans and other similar units, such as length of hand, foot, fist or fingers, differ from person to person. Thus, there is a need for such a unit for which measurements of the same length made by different people do not differ.',
+          'Table 5.1 (Measuring the length of the table, number of handspans): Anish — Slightly more than 13 · Padma — 13 · Tasneem — Slightly less than 13 · Deepa — Between 13 and 14 · Hardeep — 14',
+        ] },
+      ],
+    },
     materials: ['A table, bed, door or floor mat', 'A ruler or measuring tape (a 15 cm school ruler is fine: move it along step by step)', 'One adult or older person at home'],
     steps: [
       'Spread your hand wide. Measure your handspan (thumb tip to little-finger tip) in cm.',
@@ -20,17 +40,24 @@ const ASSIGNMENTS = [
     ],
     together: 'Working with a friend? Each of you measures a table in your OWN home, then compare: why are your numbers different?',
     questions: [
-      { id: 'pred', phase: 'Predict', type: 'choice', label: 'Before you measure: who will need MORE handspans to cover the table?', options: ['Me', 'The adult', 'We will need the same number'] },
-      { id: 'what', phase: 'Record', type: 'text', label: 'What did you measure, and what was kept on it?' },
-      { id: 'hs1', phase: 'Record', type: 'number', label: 'Your handspan', unit: 'cm', min: 5, max: 30 },
-      { id: 'n1', phase: 'Record', type: 'number', label: 'Your handspans along the table', unit: 'handspans', min: 1, max: 60 },
+      { id: 'pred', phase: 'Predict', type: 'choice', label: 'Before you measure: who will need MORE handspans to cover the table?', options: ['Me', 'The adult', 'We will need the same number'],
+        why: 'In the book, Tasneem guesses why the five friends got different counts. Make your own guess before you see the answer at home.', ref: 'Our handspans are of different sizes' },
+      { id: 'what', phase: 'Record', type: 'text', label: 'What did you measure, and what was kept on it?',
+        why: 'Every home is different. This is the part of your answer only you can write.' },
+      { id: 'hs1', phase: 'Record', type: 'number', label: 'Your handspan', unit: 'cm', min: 5, max: 30, why: 'This is the size of YOUR unit.' },
+      { id: 'n1', phase: 'Record', type: 'number', label: 'Your handspans along the table', unit: 'handspans', min: 1, max: 60, why: 'Like the friends in Table 5.1, write “in between” answers as halves.', ref: 'Table 5.1' },
       { id: 'hs2', phase: 'Record', type: 'number', label: "The adult's handspan", unit: 'cm', min: 5, max: 35 },
       { id: 'n2', phase: 'Record', type: 'number', label: "The adult's handspans along the table", unit: 'handspans', min: 1, max: 60 },
-      { id: 'L', phase: 'Record', type: 'number', label: 'Table length with the ruler or tape', unit: 'cm', min: 20, max: 500 },
-      { id: 'gap', phase: 'Calculate', type: 'text', label: "Multiply the adult's handspan by their count. How close is it to the ruler length? Why is it not exactly the same?" },
-      { id: 'why', phase: 'Explain', type: 'text', label: 'Was your prediction right? Why did you and the adult get different numbers for the same table?' },
-      { id: 'shop', phase: 'Explain', type: 'text', label: 'A cloth seller measures cloth with her hand. Would you rather buy from a seller with a big hand or a small hand? Why?' },
-      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Explain your answer to the adult. Write the sentence THEY say back to you.' },
+      { id: 'L', phase: 'Record', type: 'number', label: 'Table length with the ruler or tape', unit: 'cm', min: 20, max: 500,
+        why: 'Deepa says, “No wonder people use scales and measuring tapes.” Now you measure the same table in a unit that does not change from person to person.', ref: 'No wonder people use scales and measuring tapes' },
+      { id: 'gap', phase: 'Calculate', type: 'text', label: "Multiply the adult's handspan by their count. How close is it to the ruler length? Why is it not exactly the same?",
+        why: 'A length has two parts: a number and a unit. Handspan × count should give back the length in cm. If it does not quite match, the reason teaches you something about measuring.' },
+      { id: 'why', phase: 'Explain', type: 'text', label: 'Was your prediction right? Why did you and the adult get different numbers for the same table?',
+        why: 'This is Hardeep’s question in the book: “But why should the number be different?” Answer it with your own numbers.', ref: 'But why should the number be different?' },
+      { id: 'shop', phase: 'Explain', type: 'text', label: 'A cloth seller measures 4 handspans of cloth for you. Would you rather she had a big hand or a small hand? Why?',
+        why: 'The book says body units “differ from person to person”. Here you use that idea in a real situation where it matters to you.', ref: 'differ from person to person' },
+      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Explain to the adult why we need a standard unit. Write the sentence THEY say back to you.',
+        why: 'If you can explain it so someone else understands, you have really learned it.' },
     ],
     feedback(a) {
       const f = [], check = (hs, n, who) => {
@@ -51,7 +78,23 @@ const ASSIGNMENTS = [
     concept: 'Time period of a pendulum depends on its length, not its mass',
     objective: 'Measure the time period of a pendulum at two lengths, change only one thing at a time, and describe how length affects the time period.',
     pattern: 'Repeat with one change',
-    intro: 'Galileo is said to have timed a swinging lamp using his pulse. You will use a watch to find out what changes a pendulum’s swing.',
+    intro: 'Your textbook tells the story of Galileo timing a swinging lamp with his pulse, and then asks: “Would all pendulums have the same time period?” Today you find out.',
+    why: 'For about 300 years, the most accurate clocks in the world were pendulum clocks. Their makers had to know exactly how the length of a pendulum changes its swing. A playground swing, a temple bell and a grandfather clock all follow the same rule you will discover.',
+    book: {
+      title: 'Curiosity, Grade 7 · Chapter 8', pdf: NCERT('gecu108'),
+      sections: [
+        { page: 4, printed: 108, heading: 'Know a scientist', paras: [
+          'It is said that once while sitting in a church, Galileo’s attention was drawn to a lamp suspended from the ceiling, which was swinging back and forth. Using his pulse to measure time, Galileo found that the lamp took the same time for each swing. After experimenting with different pendulums, Galileo concluded that the time taken to complete one oscillation was always the same for a pendulum of a given length.',
+        ] },
+        { page: 5, printed: 109, heading: 'What is one oscillation?', paras: [
+          'The pendulum is said to have completed one oscillation when its bob, starting from its mean position O, moves to extreme position A, changes direction and moves to another extreme position B, changes direction and comes back to O (Fig. 8.7b). The pendulum also completes one oscillation when its bob moves from one extreme position A to another extreme position B and comes back to A. The time taken by the pendulum to complete one oscillation is called its time period.',
+        ] },
+        { page: 6, printed: 110, heading: 'Think like a scientist', paras: [
+          'Using a watch, measure the time it takes for the pendulum to complete 10 oscillations. Record the time in Table 8.1. Repeat this activity 3–4 times. Divide the time taken for 10 oscillations by 10 to calculate the time period of your pendulum.',
+          'Suppose you were Galileo experimenting with pendulums, what all would you investigate? What questions could you ask? Would all pendulums have the same time period? How would you test this? Repeat Activity 8.2 using the same bob but with pendulums of two or three different lengths. Does the time period change? If so, how does the length affect it? If changing the length influences the time period, does the bob’s mass also matter?',
+        ] },
+      ],
+    },
     materials: ['Thread about 1.5 m long', 'A small heavy object as the bob (stone, key, nut)', 'A watch or phone stopwatch', 'Ruler or tape', 'A place to hang the thread (ask an adult to tie it high, e.g. on a door frame or hook)'],
     safety: 'Do not climb to tie the thread. Ask an adult.',
     steps: [
@@ -63,16 +106,24 @@ const ASSIGNMENTS = [
     ],
     together: 'Working with a friend? One of you counts while the other times, then swap jobs. Both of you write your own answers.',
     questions: [
-      { id: 'pred', phase: 'Predict', type: 'choice', label: 'If you make the thread 4 times longer, the time for one oscillation (there and back) will…', options: ['Stay the same', 'Double', 'Become 4 times', 'Get shorter'] },
-      { id: 't1a', phase: 'Record', type: 'number', label: '25 cm: time for 10 oscillations, try 1', unit: 's', min: 1, max: 100 },
-      { id: 't1b', phase: 'Record', type: 'number', label: '25 cm: time for 10 oscillations, try 2', unit: 's', min: 1, max: 100 },
+      { id: 'pred', phase: 'Predict', type: 'choice', label: 'If you make the thread 4 times longer, the time for one oscillation (there and back) will…', options: ['Stay the same', 'Double', 'Become 4 times', 'Get shorter'],
+        why: 'The book asks: “Does the time period change? If so, how does the length affect it?” Commit to an answer before you test it, like a scientist.', ref: 'Does the time period change? If so, how does the length affect it?' },
+      { id: 't1a', phase: 'Record', type: 'number', label: '25 cm: time for 10 oscillations, try 1', unit: 's', min: 1, max: 100,
+        why: 'One swing is too quick to time with a watch, so the book times 10 and divides by 10.', ref: 'Divide the time taken for 10 oscillations by 10' },
+      { id: 't1b', phase: 'Record', type: 'number', label: '25 cm: time for 10 oscillations, try 2', unit: 's', min: 1, max: 100,
+        why: 'The book says to repeat 3–4 times. Real timings are never exactly equal; how close are yours?', ref: 'Repeat this activity 3–4 times' },
       { id: 't2a', phase: 'Record', type: 'number', label: '100 cm: time for 10 oscillations, try 1', unit: 's', min: 1, max: 100 },
       { id: 't2b', phase: 'Record', type: 'number', label: '100 cm: time for 10 oscillations, try 2', unit: 's', min: 1, max: 100 },
-      { id: 'mass', phase: 'Record', type: 'choice', label: 'Bonus: with a heavier bob at 100 cm, the time…', options: ['Did not change much', 'Got longer', 'Got shorter', 'I did not try'] },
-      { id: 'hard', phase: 'Record', type: 'text', label: 'What was hardest about counting or timing, and how did you fix it?' },
-      { id: 'why', phase: 'Explain', type: 'text', label: 'Was your prediction right? What happened to the time when the thread became 4 times longer? Use your numbers.' },
-      { id: 'apply', phase: 'Explain', type: 'text', label: 'A pendulum clock is running slow. Should the shopkeeper make its pendulum shorter or longer? Why?' },
-      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Show an adult both pendulums and explain. Write the sentence THEY say back to you.' },
+      { id: 'mass', phase: 'Record', type: 'choice', label: 'Bonus: with a heavier bob at 100 cm, the time…', options: ['Did not change much', 'Got longer', 'Got shorter', 'I did not try'],
+        why: 'The book’s last question: “does the bob’s mass also matter?” A fair test changes only one thing at a time.', ref: 'does the bob’s mass also matter?' },
+      { id: 'hard', phase: 'Record', type: 'text', label: 'What was hardest about counting or timing, and how did you fix it?',
+        why: 'Real scientists always write down what went wrong. Only someone who did it can answer this.' },
+      { id: 'why', phase: 'Explain', type: 'text', label: 'Was your prediction right? When the thread became 4 times longer, how many times longer did one oscillation take? Use your numbers.',
+        why: 'Galileo found the time is the same for a given length. You have now tested what happens when the length changes.', ref: 'always the same for a pendulum of a given length' },
+      { id: 'apply', phase: 'Explain', type: 'text', label: 'A pendulum clock is running slow (its pendulum takes too long for each swing). Should the shopkeeper make its pendulum shorter or longer? Why?',
+        why: 'Huygens built the first pendulum clock using Galileo’s idea. This is the real problem every clockmaker had to solve.' },
+      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Show an adult both pendulums and explain. Write the sentence THEY say back to you.',
+        why: 'If you can explain it so someone else understands, you have really learned it.' },
     ],
     feedback(a) {
       const f = [], avg = (x, y) => (x && y ? (x + y) / 2 : x || y);
@@ -95,13 +146,30 @@ const ASSIGNMENTS = [
     concept: 'Saturated solutions and solubility',
     objective: 'Find by experiment that a fixed amount of water can dissolve only a limited amount of salt (a saturated solution), and use the evidence to correct a wrong explanation.',
     pattern: 'Find the error in an AI explanation · Prediction then observation',
-    intro: 'A student asked an AI chatbot about dissolving salt. Some of its answer is right and some is wrong. Do the experiment and decide which is which.',
+    intro: 'Your textbook opens this chapter with a question: “What happens when you add too much sugar to your tea and it stops dissolving?” A student asked an AI chatbot about this. Some of its answer is right and some is wrong. Your experiment decides which.',
+    why: 'AI chatbots sound confident even when they are wrong. Scientists do not trust a claim because it sounds good; they test it. You will see the same idea when you make ORS (oral rehydration solution) or pickles at home: the amount of salt or sugar that dissolves is limited.',
     aiText: [
       '1. Salt dissolves in water because the salt particles spread out between the water particles.',
       '2. If you keep stirring long enough, half a glass of water can dissolve as much salt as you add.',
       '3. Once salt dissolves, it is gone. That is why you cannot see it any more.',
       '4. Temperature never changes how much of any solid can dissolve in water.',
     ],
+    book: {
+      title: 'Curiosity, Grade 8 · Chapter 9', pdf: NCERT('hecu109'),
+      sections: [
+        { page: 1, printed: 134, heading: 'Probe and ponder', paras: [
+          'What happens when you add too much sugar to your tea and it stops dissolving? How can you solve this problem?',
+        ] },
+        { page: 3, printed: 136, heading: 'Activity 9.1: Let us investigate', paras: [
+          'Take a clean glass tumbler and fill it half with water. Add one spoon of salt into it and stir well till it dissolves completely. Gradually add a spoonful of salt into the glass tumbler and stir. Observe how many spoons of salt you can add before it stops dissolving completely.',
+          'How many spoons of salt were you able to dissolve before some of it remained undissolved? What does this indicate about the capacity of water to dissolve salt?',
+        ] },
+        { page: 4, printed: 137, heading: 'Saturated and unsaturated', paras: [
+          'You might have observed that, initially, the salt completely dissolves in the water, forming a solution. After adding a few more spoons of salt, a stage comes when the added salt does not dissolve completely and the undissolved salt settles at the bottom. This indicates that the water can no longer dissolve any more salt because it has reached its limit. The solution in which more solute can be dissolved at a given temperature, is called an unsaturated solution. However, when the solute stops dissolving and begins to settle at the bottom, the solution is called a saturated solution at that particular temperature.',
+          'We can say that the maximum amount of solute that dissolves in a fixed quantity of the solvent is called its solubility. Does temperature affect the solubility of a solute? Let us find out!',
+        ] },
+      ],
+    },
     materials: ['A glass tumbler', 'Water', 'Salt (about 10 teaspoons)', 'A teaspoon', 'A spoon to stir'],
     steps: [
       'Fill the glass half with water.',
@@ -114,15 +182,24 @@ const ASSIGNMENTS = [
     ],
     together: 'Working with a friend? Each of you does the experiment at home with your own glass and spoon, then compare your spoon counts: why are they different?',
     questions: [
-      { id: 'pred', phase: 'Predict', type: 'number', label: 'Before you start: how many teaspoons of salt do you think half a glass of water can dissolve?', unit: 'spoons', min: 0, max: 1000 },
-      { id: 'n', phase: 'Record', type: 'number', label: 'Spoons that fully dissolved', unit: 'spoons', min: 0, max: 100 },
-      { id: 'bottom', phase: 'Record', type: 'text', label: 'What did the salt at the bottom look like? What happened to it when you added 2 more spoons of water?' },
-      { id: 'taste', phase: 'Record', type: 'choice', label: 'The clear water tasted…', options: ['Salty', 'Like plain water'] },
-      { id: 'off', phase: 'Explain', type: 'text', label: 'How far off was your prediction? Why do you think so?' },
-      { id: 'wrong', phase: 'Explain', type: 'checks', label: 'Which AI sentences does YOUR experiment show are wrong? Tick them.', options: ['1', '2', '3', '4'] },
-      { id: 'fix', phase: 'Explain', type: 'text', label: 'Rewrite ONE wrong sentence so it is correct. Use what you saw.' },
-      { id: 'untested', phase: 'Explain', type: 'text', label: 'Which sentence could you NOT check with this experiment? Describe an experiment that would check it.' },
-      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Explain "saturated solution" to an adult using your glass. Write the sentence THEY say back to you.' },
+      { id: 'pred', phase: 'Predict', type: 'number', label: 'Before you start: how many teaspoons of salt do you think half a glass of water can dissolve?', unit: 'spoons', min: 0, max: 1000,
+        why: 'Most people have never counted. Write a real guess, then see how close you get.' },
+      { id: 'n', phase: 'Record', type: 'number', label: 'Spoons that fully dissolved', unit: 'spoons', min: 0, max: 100,
+        why: 'This is the textbook’s own question: “How many spoons of salt were you able to dissolve before some of it remained undissolved?”', ref: 'How many spoons of salt were you able to dissolve before some of it remained undissolved?' },
+      { id: 'bottom', phase: 'Record', type: 'text', label: 'What did the salt at the bottom look like? What happened to it when you added 2 more spoons of water?',
+        why: 'The book says water “has reached its limit”. Adding water changes the limit. What you see tells you whether the limit belongs to the salt or to the amount of water.', ref: 'it has reached its limit' },
+      { id: 'taste', phase: 'Record', type: 'choice', label: 'The clear water tasted…', options: ['Salty', 'Like plain water'],
+        why: 'You cannot see dissolved salt. Your tongue can tell you whether it is still there.' },
+      { id: 'off', phase: 'Explain', type: 'text', label: 'How far off was your prediction? Why do you think so?',
+        why: 'Being surprised is how you learn. Write what surprised you.' },
+      { id: 'wrong', phase: 'Explain', type: 'checks', label: 'Which AI sentences does YOUR experiment show are wrong? Tick them.', options: ['1', '2', '3', '4'],
+        why: 'A claim is only wrong if your evidence goes against it. For each sentence, ask: did I see something that disagrees?' },
+      { id: 'fix', phase: 'Explain', type: 'text', label: 'Rewrite ONE wrong sentence so it is correct. Use the word “saturated” and what you saw.',
+        why: 'The book defines a saturated solution as one where “the solute stops dissolving and begins to settle at the bottom”.', ref: 'the solution is called a saturated solution at that particular temperature' },
+      { id: 'untested', phase: 'Explain', type: 'text', label: 'Which sentence could you NOT check with this experiment? Describe an experiment (with an adult) that would check it.',
+        why: 'The book itself asks: “Does temperature affect the solubility of a solute?” Your experiment kept the temperature the same, so it cannot answer that.', ref: 'Does temperature affect the solubility of a solute?' },
+      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Explain "saturated solution" to an adult using your glass. Write the sentence THEY say back to you.',
+        why: 'If you can explain it so someone else understands, you have really learned it.' },
     ],
     feedback(a) {
       const f = [];
@@ -149,7 +226,27 @@ const ASSIGNMENTS = [
     concept: 'Decimals for very small measurements; dividing to find one part',
     objective: 'Find the thickness of one sheet by measuring a stack and dividing, write it in thousandths of a mm, and explain why a bigger stack gives a better answer.',
     pattern: 'Estimate, measure, apply to a new case',
-    intro: 'A sheet of paper is too thin for your ruler. A stack of sheets is not.',
+    intro: 'Your textbook chapter begins with Sonu, who notices that two screws that look the same are slightly different in length. Some things are too small to see on a ruler. How do you measure them?',
+    why: 'Paper makers, printers and engineers measure things much thinner than a millimetre every day: paper, wire, the coating on a phone screen. The trick you will use (measure many, then divide) is how scientists measure tiny things they cannot measure one at a time.',
+    book: {
+      title: 'Ganita Prakash, Grade 7 · Chapter 3', pdf: NCERT('gegp103'),
+      sections: [
+        { page: 1, printed: 46, heading: '3.1 The need for smaller units', paras: [
+          'She brought another screw from the box and was able to fix the toy. The two screws looked the same to Sonu. But when he observed them closely, he saw they were of slightly different lengths.',
+          'Sonu was fascinated by how such a small difference in lengths could matter so much. He was curious to know the difference in lengths. He was also curious to know how little the difference was because the screws looked nearly the same.',
+        ] },
+        { page: 2, printed: 47, heading: 'Dividing a unit into smaller parts', paras: [
+          'As seen on the ruler, the unit length between two consecutive numbers is divided into 10 equal parts.',
+          'Can you explain why the unit was divided into smaller parts to measure the screws?',
+        ] },
+        { page: 15, printed: 60, heading: 'Thousandths', paras: [
+          'What will the fraction be when 1/100 is split into 10 equal parts? It will be 1/1000, i.e., a thousand such parts make up a unit.',
+        ] },
+        { page: 16, printed: 61, heading: 'How big?', paras: [
+          '(a) How many thousandths make one unit? (b) How many thousandths make one tenth? (c) How many thousandths make one hundredth?',
+        ] },
+      ],
+    },
     materials: ['A textbook or notebook with at least 200 pages', 'A ruler with mm marks'],
     steps: [
       'A sheet is one leaf of paper. It has 2 pages (front and back). 200 pages = 100 sheets.',
@@ -160,16 +257,25 @@ const ASSIGNMENTS = [
     ],
     together: 'Working with a friend? Use DIFFERENT kinds of paper (notebook, textbook, newspaper) and compare. Whose paper is thickest?',
     questions: [
-      { id: 'pred', phase: 'Predict', type: 'number', label: 'Guess the thickness of one sheet, in mm.', unit: 'mm', min: 0, max: 10 },
-      { id: 'book1', phase: 'Record', type: 'text', label: 'Which book or notebook did you use?' },
+      { id: 'pred', phase: 'Predict', type: 'number', label: 'Guess the thickness of one sheet, in mm.', unit: 'mm', min: 0, max: 10,
+        why: 'The smallest mark on your ruler is 1 mm. Is a sheet more or less than that? How much less?' },
+      { id: 'one', phase: 'Record', type: 'text', label: 'What happened when you tried to measure ONE sheet with the ruler?',
+        why: 'Like Sonu’s screws, a sheet is too thin to see the difference on a ruler. Notice the problem before you solve it.', ref: 'how little the difference was because the screws looked nearly the same' },
+      { id: 'book1', phase: 'Record', type: 'text', label: 'Which book or notebook did you use?', why: 'Different paper has different thickness. Your answer belongs to your book.' },
       { id: 'h50', phase: 'Record', type: 'number', label: 'Height of 50 sheets', unit: 'mm', min: 0.5, max: 50 },
       { id: 'h100', phase: 'Record', type: 'number', label: 'Height of 100 sheets', unit: 'mm', min: 0.5, max: 100 },
-      { id: 't50', phase: 'Calculate', type: 'number', label: 'One sheet, from the 50-sheet stack', unit: 'mm', min: 0, max: 2 },
-      { id: 't100', phase: 'Calculate', type: 'number', label: 'One sheet, from the 100-sheet stack', unit: 'mm', min: 0, max: 2 },
-      { id: 'diff', phase: 'Explain', type: 'text', label: 'Your two answers are probably not exactly the same. Why not?' },
-      { id: 'better', phase: 'Explain', type: 'text', label: 'Your ruler can be off by about half a mm. Which stack gives the more correct answer, and why?' },
-      { id: 'book', phase: 'Explain', type: 'text', label: 'Take a DIFFERENT book. Write its name and its last page number. Measure its thickness without the covers. Use your sheet thickness to estimate its pages. How close did you get? Show your working.' },
-      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Explain to an adult why you measured 100 sheets instead of one. Write the sentence THEY say back to you.' },
+      { id: 't50', phase: 'Calculate', type: 'number', label: 'One sheet, from the 50-sheet stack', unit: 'mm', min: 0, max: 2,
+        why: 'You are splitting a length into 50 equal parts, just as the book splits a unit into 10, 100 and 1000 parts.', ref: 'a thousand such parts make up a unit' },
+      { id: 't100', phase: 'Calculate', type: 'number', label: 'One sheet, from the 100-sheet stack', unit: 'mm', min: 0, max: 2,
+        why: 'Your answer will have thousandths of a millimetre. How many thousandths make one millimetre?', ref: 'How many thousandths make one unit?' },
+      { id: 'diff', phase: 'Explain', type: 'text', label: 'Your two answers are probably not exactly the same. Why not?',
+        why: 'Every real measurement has a little error. Spotting where it comes from is part of measuring well.' },
+      { id: 'better', phase: 'Explain', type: 'text', label: 'Your ruler can be off by about half a mm. Which stack gives the more correct answer, and why?',
+        why: 'Half a millimetre of error shared among 50 sheets, or among 100 sheets: which is smaller per sheet?' },
+      { id: 'book', phase: 'Explain', type: 'text', label: 'Take a DIFFERENT book. Write its name and its last page number. Measure its thickness without the covers. Use your sheet thickness to estimate its pages. How close did you get? Show your working.',
+        why: 'Now you use your answer on a new problem, which is how you know your method works.' },
+      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Explain to an adult why you measured 100 sheets instead of one. Write the sentence THEY say back to you.',
+        why: 'If you can explain it so someone else understands, you have really learned it.' },
     ],
     feedback(a) {
       const f = [];
@@ -188,11 +294,28 @@ const ASSIGNMENTS = [
   {
     id: 'sweet', grade: 8, subject: 'Maths', minutes: 25,
     title: 'Same sweetness, more cups',
-    chapter: 'Ganita Prakash (Grade 8), Ch. 7 Proportional Reasoning-1 (Example 2: Kesang’s lemonade; a : b :: c : d)',
-    concept: 'Proportional ratios',
+    chapter: 'Ganita Prakash (Grade 8), Ch. 7 Proportional Reasoning-1 (images A–E, Example 2: Kesang’s lemonade)',
+    concept: 'Proportional ratios: multiplying keeps a ratio, adding does not',
     objective: 'Use a : b :: c : d to scale a recipe, solve a version with a fixed amount of sugar, and test with a family taste test why adding the same amount is not the same as multiplying.',
     pattern: 'Design under a constraint · Household experiment · Family as the judge',
-    intro: 'In your textbook, Kesang makes lemonade for a party. Now it is your turn, with a real taste test.',
+    intro: 'In your textbook, two pictures are both made 20 mm smaller, yet one looks squashed. Then Kesang has to make more lemonade that tastes the same. Today you test the same idea with your tongue.',
+    why: 'Every cook who makes a bigger batch, every shopkeeper who mixes ORS or sharbat, and every pharmacist who prepares a medicine has to scale a recipe without changing its taste or strength. Getting it wrong (adding instead of multiplying) changes the result.',
+    book: {
+      title: 'Ganita Prakash, Grade 8 · Chapter 7', pdf: NCERT('hegp107'),
+      sections: [
+        { page: 2, printed: 160, heading: 'Adding vs multiplying', paras: [
+          'When we compare image A with image B, we notice that the width of B is 20 millimetre (mm) less than that of A. The height too is 20 mm less than the height of A. Even though the difference (through subtraction) is the same, the images look different. Have the width and height changed by the same factor? The height of B is half the height of A. But the width of B is not half the width of A. Since the width and height have not changed by the same factor, the images look different.',
+        ] },
+        { page: 3, printed: 161, heading: '7.2 Ratios', paras: [
+          'In a ratio of the form a : b, we can say that for every ‘a’ units of the first quantity, there are ‘b’ units of the second quantity.',
+        ] },
+        { page: 4, printed: 162, heading: 'Proportional ratios and Kesang’s lemonade', paras: [
+          'So a : b :: c : d indicates that the ratios a : b and c : d are proportional.',
+          'Example 2: Kesang wanted to make lemonade for a celebration. She made 6 glasses of lemonade in a vessel and added 10 spoons of sugar to the drink. Her father expected more people to join the celebration. So he asked her to make 18 more glasses of lemonade. To make the lemonade with the same sweetness, how many spoons of sugar should she add?',
+          'We know that each term in the ratio must change by the same factor, for the ratios to be proportional.',
+        ] },
+      ],
+    },
     materials: ['Small cups or glasses (all the same size)', 'Water', 'Sugar (about 10 teaspoons) and a teaspoon', 'Lemon (optional)', 'One person at home to taste'],
     safety: 'Ask before using sugar. Use a clean spoon for each taste and do not share cups. If someone cannot have sugar, use a pinch of turmeric or a little tea in water and compare the COLOUR instead of the taste. Drink or use the sweet water afterwards; do not waste it.',
     steps: [
@@ -204,23 +327,32 @@ const ASSIGNMENTS = [
     ],
     together: 'Working with a friend? Each of you makes your own drink A with a different recipe. Swap recipes: can your friend scale YOUR recipe correctly?',
     questions: [
-      { id: 'a', phase: 'Record', type: 'number', label: 'Spoons of sugar in drink A (1 cup of water)', unit: 'spoons', min: 0.5, max: 10 },
-      { id: 'pred', phase: 'Predict', type: 'choice', label: 'Before tasting: which drink will taste LESS sweet than A?', options: ['B', 'C', 'Both the same as A'] },
-      { id: 'b', phase: 'Calculate', type: 'number', label: 'Spoons for drink B (2 cups) so it tastes the same as A', unit: 'spoons', min: 0, max: 40 },
-      { id: 'words', phase: 'Record', type: 'text', label: 'What words did the taster use for each cup? (e.g. "watery", "same as the first one")' },
-      { id: 'dcups', phase: 'Record', type: 'number', label: 'Drink D: cups of water you chose', unit: 'cups', min: 0.5, max: 20 },
+      { id: 'a', phase: 'Record', type: 'number', label: 'Spoons of sugar in drink A (1 cup of water)', unit: 'spoons', min: 0.5, max: 10,
+        why: 'Your family’s recipe is your ratio, cups : spoons. Everyone’s may be different.', ref: 'for every ‘a’ units of the first quantity, there are ‘b’ units of the second quantity' },
+      { id: 'pred', phase: 'Predict', type: 'choice', label: 'Before tasting: which drink will taste LESS sweet than A?', options: ['B', 'C', 'Both the same as A'],
+        why: 'Images A and B in the book both lost 20 mm, yet B looked different. Will adding the same sugar to more water work any better?', ref: 'Even though the difference (through subtraction) is the same, the images look different' },
+      { id: 'b', phase: 'Calculate', type: 'number', label: 'Spoons for drink B (2 cups) so it tastes the same as A', unit: 'spoons', min: 0, max: 40,
+        why: 'This is Kesang’s problem with your own recipe: “each term in the ratio must change by the same factor”.', ref: 'each term in the ratio must change by the same factor' },
+      { id: 'words', phase: 'Record', type: 'text', label: 'What words did the taster use for each cup? (e.g. "watery", "same as the first one")',
+        why: 'Only you know what your taster said. Their words are your evidence.' },
+      { id: 'dcups', phase: 'Record', type: 'number', label: 'Drink D: cups of water you chose', unit: 'cups', min: 0.5, max: 20, why: 'You choose the problem this time.' },
       { id: 'dspoons', phase: 'Calculate', type: 'number', label: 'Drink D: spoons of sugar you worked out', unit: 'spoons', min: 0, max: 100 },
-      { id: 'dtaste', phase: 'Record', type: 'text', label: 'Did drink D taste the same as A? What did the taster say?' },
-      { id: 'cups', phase: 'Calculate', type: 'number', label: 'Challenge: you have only 5 spoons of sugar. How many cups of water can you sweeten exactly like drink A?', unit: 'cups', min: 0, max: 100 },
-      { id: 'ratios', phase: 'Explain', type: 'text', label: 'Write cups : spoons for A, B and C. Which two are in the same ratio? Show how you know.' },
-      { id: 'why', phase: 'Explain', type: 'text', label: 'C had the same sugar as A. Explain why it tasted different. Use the words "per cup".' },
-      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Explain to your taster why C tasted different. Write the sentence THEY say back to you.' },
+      { id: 'dtaste', phase: 'Record', type: 'text', label: 'Did drink D taste the same as A? What did the taster say?',
+        why: 'The taste test checks your maths. If D tasted different, find out why.' },
+      { id: 'cups', phase: 'Calculate', type: 'number', label: 'Challenge: you have only 5 spoons of sugar. How many cups of water can you sweeten exactly like drink A?', unit: 'cups', min: 0, max: 100,
+        why: 'Sometimes you cannot just make more: you have a limit. The answer does not have to be a whole number.' },
+      { id: 'ratios', phase: 'Explain', type: 'text', label: 'Write cups : spoons for A, B and C in simplest form. Which two are proportional? Write it with ::.',
+        why: 'The book compares ratios by writing them in simplest form, then uses :: to show they are proportional.', ref: 'So a : b :: c : d indicates that the ratios a : b and c : d are proportional.' },
+      { id: 'why', phase: 'Explain', type: 'text', label: 'C had the same sugar as A. Explain why it tasted different. Use the words "per cup".',
+        why: 'This is the same mistake as image B: the amount changed, but not by the same factor.', ref: 'Since the width and height have not changed by the same factor, the images look different.' },
+      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Explain to your taster why C tasted different. Write the sentence THEY say back to you.',
+        why: 'If you can explain it so someone else understands, you have really learned it.' },
     ],
     feedback(a) {
       const f = [], has = x => x !== '' && x != null;
       if (a.a && has(a.b)) f.push(Math.abs(a.b - 2 * a.a) < 0.01 ? ['ok', `1 : ${a.a} :: 2 : ${a.b}. Both numbers were multiplied by the same factor.`] : ['warn', 'Drink B has twice the water. For the same sweetness, what must happen to the sugar?']);
       if (a.a && a.dcups && has(a.dspoons)) f.push(Math.abs(a.dspoons - a.a * a.dcups) < 0.05 ? ['ok', `Drink D: ${a.dcups} cups with ${a.dspoons} spoons is ${a.a} spoons per cup, like A.`] : ['warn', `Drink D: how many spoons per cup is that? Compare with drink A (${a.a} per cup).`]);
-      if (a.a && has(a.cups)) f.push(Math.abs(a.cups - 5 / a.a) < 0.05 ? ['ok', `Yes: 5 spoons is ${+(5 / a.a).toFixed(2)} times ${a.a} spoons, so the water also goes up ${+(5 / a.a).toFixed(2)} times.`] : ['warn', `Your recipe uses ${a.a} spoons per cup. By what number do you multiply ${a.a} to get 5? Do the same to 1 cup. (The answer does not have to be a whole number.)`]);
+      if (a.a && has(a.cups)) f.push(Math.abs(a.cups - 5 / a.a) < 0.05 ? ['ok', `Yes: 5 spoons is ${+(5 / a.a).toFixed(2)} times ${a.a} spoons, so the water also goes up ${+(5 / a.a).toFixed(2)} times.`] : ['warn', `Your recipe uses ${a.a} spoons per cup. By what number do you multiply ${a.a} to get 5? Do the same to 1 cup.`]);
       return f;
     },
   },

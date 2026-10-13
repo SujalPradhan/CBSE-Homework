@@ -39,6 +39,8 @@ document.getElementById('list').innerHTML = ASSIGNMENTS.map((a, i) => {
   const t = TEACHER[a.id], link = base + '#' + a.id;
   return `<details class="card" ${i === 0 ? 'open' : ''}><summary><span class="chip">Grade ${a.grade} · ${a.subject}</span><span class="chip">${a.minutes} min</span><br><h2>${esc(a.title)}</h2></summary>
     <p><b>Learning objective:</b> ${esc(a.objective)}</p>
+    <p><b>Why it matters:</b> ${esc(a.why)}</p>
+    <p class="muted"><a href="book.html?a=${a.id}" target="_blank">Textbook passages behind this task ↗</a></p>
     <p class="muted">${esc(a.chapter)} · ${esc(a.pattern)} · Prep: ${esc(t.prep)}</p>
     <div class="lbl">Send this to students</div>
     <div class="link no-print"><code>${esc(link)}</code><button class="ghost" data-copy="${esc(link)}">Copy link</button><a href="./?print&a=${a.id}" target="_blank">Printable sheet</a></div>

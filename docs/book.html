@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From Your Textbook</title>
+<meta name="description" content="The NCERT textbook passage behind each homework question, with the key sentence highlighted.">
+<link rel="stylesheet" href="style.css">
+<style>
+.ask{border-left:3px solid var(--accent);background:var(--chip);padding:12px 14px;border-radius:0 10px 10px 0}
+.ask b{display:block;margin-bottom:4px}
+blockquote{margin:10px 0;padding:0 0 0 14px;border-left:3px solid var(--line);font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.6}
+mark{background:#ffe58a;color:#17171a;padding:1px 2px;border-radius:3px;scroll-margin-top:120px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) mark{background:#7a5d00;color:#fff}}
+.src{font-size:14px}
+</style>
+</head>
+<body>
+<main>
+  <p class="muted"><a href="./" id="back">← Back to the task</a></p>
+  <div id="out"></div>
+  <p class="muted" style="margin-top:24px">Text quoted from NCERT textbooks (Reprint 2026-27) for study use. Read the full chapter in the original PDF.</p>
+</main>
+<script src="assignments.js"></script>
+<script>
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const q = new URLSearchParams(location.search), A = ASSIGNMENTS.find(a => a.id === q.get('a')) || ASSIGNMENTS[0];
+const Q = A.questions.find(x => x.id === q.get('q')), ref = Q && Q.ref;
+document.getElementById('back').href = './#' + A.id;
+document.title = `${A.book.title}: From Your Textbook`;
+const mark = p => {
+  const t = esc(p);
+  if (!ref || !p.includes(ref)) return t;
+  return t.replace(esc(ref), `<mark id="hl">${esc(ref)}</mark>`);
+};
+let refSection = null;
+document.getElementById('out').innerHTML = `
+  <h1>From your textbook</h1>
+  <p class="muted">${esc(A.book.title)} · for the task “${esc(A.title)}”</p>
+  ${Q ? `<div class="ask"><b>${esc(Q.phase)}: ${esc(Q.label)}</b>${esc(Q.why || '')}</div>` : ''}
+  ${A.book.sections.map(s => {
+    const hit = ref && s.paras.some(p => p.includes(ref));
+    if (hit) refSection = s;
+    return `<section class="card"><h2 style="font-size:19px">${esc(s.heading)}</h2>
+      ${s.paras.map(p => `<blockquote>${mark(p)}</blockquote>`).join('')}
+      <p class="src"><a href="${A.book.pdf}#page=${s.page}" target="_blank" rel="noopener">Open the NCERT book at page ${s.printed} ↗</a></p></section>`;
+  }).join('')}`;
+const h = document.getElementById('hl');
+if (h) setTimeout(() => h.scrollIntoView({ block: 'center' }), 50);
+</script>
+</body>
+</html>

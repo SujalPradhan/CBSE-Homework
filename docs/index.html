@@ -21,6 +21,12 @@
 .checks label{display:inline-flex;align-items:center;gap:6px;margin-right:16px;font-weight:600;color:var(--ink)}
 .checks input{width:auto}
 .note{font-size:14px;color:var(--ink-2);background:var(--chip);border-radius:10px;padding:10px 14px}
+.qwhy{font-size:14px;color:var(--ink-2);margin:2px 0 8px;padding-left:10px;border-left:2px solid var(--line)}
+.qwhy a{white-space:nowrap}
+details.book{margin-top:12px;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--bg)}
+details.book summary{cursor:pointer;font-weight:700}
+details.book blockquote{margin:8px 0;padding-left:12px;border-left:3px solid var(--line);font-family:Georgia,serif;font-size:16px}
+.why{background:var(--ok-bg);color:var(--ink);border-radius:10px;padding:10px 14px;margin:10px 0}
 </style>
 </head>
 <body>
@@ -64,6 +70,17 @@ function field(Q, a, locked) {
   return `<textarea id="q_${Q.id}" ${dis}>${esc(v)}</textarea>`;
 }
 
+const bookLink = (A, Q) => `book.html?a=${A.id}${Q ? '&q=' + Q.id : ''}`;
+function bookBox(A) {
+  const b = A.book, pages = b.sections.map(s => s.printed);
+  return `<details class="book"><summary>📖 From your textbook: ${esc(b.title)}, page${pages.length > 1 ? 's' : ''} ${[...new Set(pages)].join(', ')}</summary>
+    ${b.sections.map(s => `<p style="margin:10px 0 0"><b>${esc(s.heading)}</b> <span class="muted">(p. ${s.printed})</span></p>${s.paras.map(p => `<blockquote>${esc(p)}</blockquote>`).join('')}`).join('')}
+    <p class="muted"><a href="${bookLink(A)}" target="_blank" rel="noopener">Open in a new tab ↗</a> · <a href="${b.pdf}#page=${b.sections[0].page}" target="_blank" rel="noopener">Original NCERT PDF ↗</a></p></details>`;
+}
+function qwhy(A, Q) {
+  if (!Q.why) return '';
+  return `<p class="qwhy"><b>Why we ask:</b> ${esc(Q.why)}${Q.ref ? ` <a href="${bookLink(A, Q)}" target="_blank" rel="noopener">See it in your book ↗</a>` : ''}</p>`;
+}
 function showOne(A) {
   const a = load(A.id), locked = !!a._locked;
   $('#list').classList.add('hide'); $('#one').classList.remove('hide');
@@ -71,21 +88,22 @@ function showOne(A) {
   let h = `<p style="margin-top:12px"><a href="#">← All tasks</a></p>
   <section class="card"><span class="chip">Grade ${A.grade} · ${A.subject}</span><span class="chip">about ${A.minutes} min</span>
     <h2 style="margin-top:10px">${esc(A.title)}</h2><p>${esc(A.intro)}</p>
-    <p class="muted">${esc(A.chapter)}</p>
+    <p class="why"><b>Why this matters:</b> ${esc(A.why)}</p>
+    ${bookBox(A)}
     <h3>You need</h3><ul class="plain">${A.materials.map(m => `<li>${esc(m)}</li>`).join('')}</ul>
     ${A.safety ? `<p class="msg warn">⚠ ${esc(A.safety)}</p>` : ''}
     ${A.aiText ? `<h3>What the AI said</h3><div class="ai">${A.aiText.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
     ${A.together ? `<p class="note">👥 ${esc(A.together)}</p>` : ''}
   </section>`;
   const pq = byPhase('Predict');
-  h += `<section class="card"><div class="phase">Step 1 · Predict</div>${pq.map(Q => `<div class="q"><label>${esc(Q.label)}</label>${field(Q, a, locked)}</div>`).join('')}
+  h += `<section class="card"><div class="phase">Step 1 · Predict</div>${pq.map(Q => `<div class="q"><label>${esc(Q.label)}</label>${qwhy(A, Q)}${field(Q, a, locked)}</div>`).join('')}
     ${locked ? `<span class="locked">🔒 Prediction locked</span>` : `<p class="muted">Lock your guess before you start. Being wrong is fine: that is how you learn.</p><button id="lock">Lock my prediction</button>`}</section>`;
   h += `<section class="card" style="opacity:${locked ? 1 : .5}"><div class="phase">Step 2 · Do it</div>${A.steps.map((s, i) => `<div class="step"><span class="num">${i + 1}</span><div>${esc(s)}</div></div>`).join('')}</section>`;
   h += `<section class="card" style="opacity:${locked ? 1 : .5}">`;
   let n = 3;
   for (const p of PHASES.slice(2)) {
     const qs = byPhase(p); if (!qs.length) continue;
-    h += `<div class="phase">Step ${n++} · ${p}</div>` + qs.map(Q => `<div class="q"><label for="q_${Q.id}">${esc(Q.label)}</label>${field(Q, a, !locked)}</div>`).join('');
+    h += `<div class="phase">Step ${n++} · ${p}</div>` + qs.map(Q => `<div class="q"><label for="q_${Q.id}">${esc(Q.label)}</label>${qwhy(A, Q)}${field(Q, a, !locked)}</div>`).join('');
   }
   h += `<p style="margin-top:16px"><button id="check" ${locked ? '' : 'disabled'}>Check my work</button> <button class="ghost" id="sheet" ${locked ? '' : 'disabled'}>My answer sheet</button></p><div id="fb"></div></section><div id="out"></div>`;
   $('#one').innerHTML = h; scrollTo(0, 0);
@@ -131,10 +149,12 @@ function showPrint(A) {
   const lines = Q => Q.type === 'text' ? '<div class="blank"></div><div class="blank"></div><div class="blank"></div>' : Q.type === 'number' ? `<div class="blank" style="width:200px"></div><span class="muted">${esc(Q.unit)}</span>` : `<p>${Q.options.map(o => '☐ ' + esc(Q.type === 'checks' ? 'Sentence ' + o : o)).join('&nbsp;&nbsp;&nbsp; ')}</p>`;
   $('#one').innerHTML = `<section class="card"><p class="muted">Name: ____________________ &nbsp; Class: ______ &nbsp; Roll: ______</p>
     <h2>${esc(A.title)}</h2><p>${esc(A.intro)}</p><p class="muted">Grade ${A.grade} ${A.subject} · ${esc(A.chapter)} · about ${A.minutes} min</p>
+    <p><b>Why this matters:</b> ${esc(A.why)}</p>
+    <h3>From your textbook</h3>${A.book.sections.map(s => s.paras.map(p => `<p style="font-family:Georgia,serif;border-left:3px solid #ccc;padding-left:10px">${esc(p)} <span class="muted">(p. ${s.printed})</span></p>`).join('')).join('')}
     <h3>You need</h3><p>${A.materials.map(esc).join(' · ')}</p>${A.safety ? `<p><b>Safety:</b> ${esc(A.safety)}</p>` : ''}
     ${A.aiText ? `<h3>What the AI said</h3>${A.aiText.map(t => `<p>${esc(t)}</p>`).join('')}` : ''}
     <h3>Steps</h3><ol>${A.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>${A.together ? `<p><i>${esc(A.together)}</i></p>` : ''}
-    ${A.questions.map(Q => `<div class="q"><b>${esc(Q.phase)}:</b> ${esc(Q.label)}${lines(Q)}</div>`).join('')}
+    ${A.questions.map(Q => `<div class="q"><b>${esc(Q.phase)}:</b> ${esc(Q.label)}${Q.why ? `<br><i class="muted">${esc(Q.why)}</i>` : ''}${lines(Q)}</div>`).join('')}
     <p class="no-print"><button onclick="print()">Print</button></p></section>`;
 }
 route();
