@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI-Proof Checklist</title>
+<meta name="description" content="How each homework task holds up when a student uses an AI agent or copies a friend, tested by an AI red-team.">
+<link rel="stylesheet" href="style.css">
+<style>main{max-width:980px} td:first-child{font-weight:600;white-space:nowrap} .y{color:var(--ok);font-weight:700} .p{color:var(--warn);font-weight:700} .n{color:#c2410c;font-weight:700}</style>
+</head>
+<body>
+<main>
+  <h1>Does it still teach if a student uses AI?</h1>
+  <p class="muted">Each task was attacked by an AI agent acting as a student with a coding agent and a browser, on 13 Oct 2026. It could not see the grading code. Below is what happened, what we fixed, and what we could not fix.</p>
+
+  <section class="card">
+    <h2>The short answer</h2>
+    <p><b>What the server stops:</b> copying a classmate's numbers (exact or almost exact), using someone else's roll number, careless made-up numbers, and numbers that break the textbook rule or basic physics.</p>
+    <p><b>What it does not stop:</b> an AI that knows the physics can invent realistic numbers, first try, for every task.</p>
+    <p><b>So the design puts the real check in class.</b> A ✓ on the teacher's list means "the numbers look real". It does not mean "done". The 2-minute question on a fresh case, plus the family member's sentence in the notebook, is what shows learning. This matches the <i>presence</i> pattern in <a href="https://www.s-anand.net/blog/the-exam-is-a-hypothesis/">The Exam Is a Hypothesis</a>.</p>
+  </section>
+
+  <section class="card">
+    <h2>Task by task</h2>
+    <div class="tw"><table>
+      <tr><th>Task</th><th>AI alone</th><th>Copy a classmate</th><th>One script for the whole class</th><th>If faked, does it still teach?</th></tr>
+      <tr><td>G6 Science · handspans</td><td>Passes, 1st try</td><td>Flagged (exact and near copies)</td><td>Passes; flagged only if submitted within 3 min of predicting</td><td><span class="p">Partly.</span> Faking needs count × handspan = table length, the idea that a bigger unit gives a smaller count.</td></tr>
+      <tr><td>G6 Maths · hand area</td><td>Passes, 1st try</td><td>Flagged</td><td>Same as above</td><td><span class="p">Partly.</span> Faking needs the textbook counting rule (full + more-than-half squares). Earlier versions skipped it; fixed.</td></tr>
+      <tr><td>G7 Science · pendulum</td><td>Passes, 1st try</td><td>Flagged</td><td>Same as above</td><td><span class="p">Partly.</span> Faking needs “4× longer → 2× the time”, close to the lesson. The formula itself is above Grade 7.</td></tr>
+      <tr><td>G7 Maths · paper</td><td>Passes, 1st try</td><td>Fails unless the classmate's sheet counts happen to be close (each student gets different counts)</td><td>Same as above</td><td><span class="y">Yes.</span> Faking means multiplying and dividing decimals to thousandths, which is the lesson.</td></tr>
+      <tr><td>G8 Maths · shadow</td><td>Passes, 1st try</td><td>Flagged; the same numbers at a different time are rejected by the sun check</td><td>Same as above</td><td><span class="n">Mostly no.</span> The hard part to fake is the sun's angle (astronomy), not the a : b :: c : d step.</td></tr>
+      <tr><td>G8 Science · bottle</td><td>Passes, 1st try</td><td>Flagged</td><td>Same as above</td><td><span class="n">No.</span> Faking needs Torricelli's law, which is well beyond Grade 8 and not the pressure-and-depth idea.</td></tr>
+    </table></div>
+    <p class="muted" style="margin-top:10px">“Flagged” means the teacher's list shows “Almost the same numbers as roll X”. Flags are prompts to ask a question, not proof.</p>
+  </section>
+
+  <section class="card">
+    <h2>The checklist, extended for schools</h2>
+    <p class="muted">The first six tests and the seventh are from Anand S's TDS ideation session. The last five are added for Grades 6–8.</p>
+    <div class="tw"><table>
+      <tr><th>Test</th><th>Question</th><th>How this site answers it</th></tr>
+      <tr><td>Learning</td><td>Is the step the student must do themselves the skill we want?</td><td>Measuring and the textbook method (counting rule, stacking sheets, a : b :: c : d). See the table above for where faking skips it.</td></tr>
+      <tr><td>Forward</td><td>Does one student's submission score for another?</td><td>Exact and near copies (within 2%) are flagged. Paper sheet counts and shadow times differ per student.</td></tr>
+      <tr><td>Solver</td><td>Would one shared tool score for everyone?</td><td><span class="n">Yes.</span> A patient script with varied numbers is not flagged. The in-class check is the defence.</td></tr>
+      <tr><td>Agent</td><td>Could an AI agent solve it through the student's browser?</td><td><span class="n">Yes</span>, for every task. That is why acceptance means “plausible”, not “done”.</td></tr>
+      <tr><td>Faking</td><td>Is faking costlier than doing it, and does faking still teach?</td><td>Costlier for a student without AI. With AI, it still teaches in 1 of 6 tasks, partly in 3, and barely in 2.</td></tr>
+      <tr><td>Oracle</td><td>Is grading server-side, robust and rate-limited?</td><td>Server-side, with 5 tries per student and messages that never give the answer. Typos are free. Class creation is limited to 10 per network per day, but a determined student could still map the tolerances.</td></tr>
+      <tr><td>Explain-back</td><td>Can the student explain how they learned it?</td><td>A family member writes one line in the notebook. The teacher asks two students to read theirs aloud.</td></tr>
+      <tr><td>Teacher load</td><td>At most 5 minutes per task per class?</td><td>Make a code, share a link, glance at the list, then a printed 2-minute check. No marking.</td></tr>
+      <tr><td>Device</td><td>Works on a shared parent phone?</td><td>Yes: one page, no app, no login. The measuring happens offline.</td></tr>
+      <tr><td>Safety and privacy</td><td>No personal data, no risky steps?</td><td>Only class code and roll number. An adult makes the bottle holes. No photos or audio.</td></tr>
+      <tr><td>Curriculum fit</td><td>Maps to an NCERT chapter?</td><td>Each task names its chapter and activity. <a href="https://github.com/SujalPradhan/CBSE-Homework/blob/main/validation/ncert_sources.md">Page references</a>.</td></tr>
+      <tr><td>Age fit</td><td>Readable for 11–14, under 30 minutes?</td><td>20–30 minutes each. Wording not yet tested with real students.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="card">
+    <h2>Fixed after the red-team</h2>
+    <ul class="plain">
+      <li>A PIN per roll number, so no one can lock a wrong prediction or use up tries for a classmate. After 10 wrong PINs the roll locks and the teacher can reset it.</li>
+      <li>Near-copies (all numbers within 2%) are flagged, not only exact copies.</li>
+      <li>Rolls that finish within 3 minutes of predicting are flagged.</li>
+      <li>Typing mistakes (out-of-range numbers) no longer use up a try.</li>
+      <li>The hand-area task now checks the textbook's part-square rule.</li>
+      <li>The bottle task requires the bottle on a stool, so the result matches the lesson.</li>
+      <li>Class results show only one summary number per student, not everyone's raw measurements.</li>
+      <li>Class creation is rate-limited, which makes it harder to use the server as a free answer checker.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>Known limits</h2>
+    <ul class="plain">
+      <li>An AI can produce realistic numbers for every task. The server cannot tell these from real measurements.</li>
+      <li>A script that waits a few minutes and varies its numbers by 3% or more is not flagged.</li>
+      <li>A student could claim a classmate's unused roll number first. The teacher can reset it.</li>
+      <li>The tolerances can still be mapped with enough effort (the red-team found the pendulum window in 13 submissions before the class limit was added).</li>
+      <li>Nothing has been tried with real students yet. The first classroom trial is the real test.</li>
+    </ul>
+  </section>
+<p class="muted" style="margin-top:28px"><a href="index.html">Student page</a> · <a href="teacher.html">Teacher page</a></p>
+</main>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Measure It: Teachers</title>
+<meta name="description" content="Teacher page: create a class code, see who has finished, open class results, print 2-minute checks.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1 class="no-print">For teachers</h1>
+  <p class="muted no-print">Three things to do: make a class code, share one link, glance at the list. No login, no marking.</p>
+
+  <section class="card no-print" id="make">
+    <h2>1 · Make a class code</h2>
+    <form id="mk" class="row">
+      <div><label for="cname">Class name (optional)</label><input id="cname" maxlength="60" placeholder="e.g. 7B Science"></div>
+      <div><label for="csize">Students in class</label><input id="csize" type="number" min="1" max="80" value="40"></div>
+      <div style="flex:0 0 auto"><button type="submit">Make code</button></div>
+    </form>
+    <div id="made"></div>
+    <p class="muted" style="margin-top:12px">Already have a code? <a href="#" id="openOld">Open its dashboard</a>.</p>
+  </section>
+
+  <section id="dash" class="hide">
+    <div class="card no-print">
+      <h2>2 · Share this link with students</h2>
+      <p><a id="studentLink" target="_blank"></a></p>
+      <p class="muted">Students enter their roll number and make up a 4-digit PIN. If a student forgets their PIN, press Reset next to their roll. Each task asks them to predict first, then measure at home, then teach it back to someone at home (written in their notebook).</p>
+      <p class="muted">Keep this page's address private: it contains your teacher key. <span id="keyNote"></span></p>
+    </div>
+    <div class="card no-print">
+      <h2>3 · Who has finished</h2>
+      <p class="muted">✓ means the numbers look like real measurements. It is not proof the student did the work: an AI can also produce realistic numbers. The real check is the 2-minute question in class, plus the family member's sentence in the notebook. Flags are things to ask about, not proof of copying.</p>
+      <div id="tables"></div>
+      <p style="margin-top:12px"><button class="ghost" id="refresh">Refresh</button> <button class="ghost" id="printBtn">Print 2-minute checks</button></p>
+    </div>
+    <div id="cards"></div>
+  </section>
+<p class="muted no-print" style="margin-top:28px"><a href="index.html">Student page</a> · <a href="checklist.html">How these tasks hold up against AI</a></p>
+</main>
+<script src="common.js"></script>
+<script>
+let C = null, TASKS = [];
+const hash = new URLSearchParams(location.hash.slice(1));
+if (hash.get('class') && hash.get('key')) C = { code: hash.get('class'), key: hash.get('key') };
+
+$('#mk').onsubmit = async e => {
+  e.preventDefault();
+  const r = await api('/api/class', { name: $('#cname').value, size: +$('#csize').value });
+  if (r.error) { $('#made').innerHTML = `<p class="msg warn">${esc(r.error)}</p>`; return; }
+  C = { code: r.code, key: r.key }; location.hash = `class=${r.code}&key=${r.key}`;
+  $('#made').innerHTML = `<p class="msg ok">Your class code is <b style="font-size:22px">${r.code}</b>. Bookmark this page now: it is the only way back to your dashboard.</p>`;
+  open();
+};
+$('#openOld').onclick = e => { e.preventDefault(); const code = prompt('Class code'), key = code && prompt('Teacher key (from your bookmarked link)'); if (code && key) { C = { code: code.toUpperCase(), key }; location.hash = `class=${C.code}&key=${key}`; open(); } };
+$('#refresh').onclick = () => open();
+$('#printBtn').onclick = () => print();
+
+async function open() {
+  const [t, d] = await Promise.all([api('/api/tasks'), api(`/api/dash?class=${C.code}&key=${encodeURIComponent(C.key)}`)]);
+  if (d.error) { $('#made').innerHTML = `<p class="msg warn">${esc(d.error)}</p>`; return; }
+  TASKS = t.tasks;
+  $('#dash').classList.remove('hide');
+  const link = new URL('index.html', location.href); link.search = `class=${C.code}`; link.hash = '';
+  $('#studentLink').href = $('#studentLink').textContent = link.href;
+  $('#keyNote').textContent = `Class ${d.class.code}${d.class.name ? ' · ' + d.class.name : ''} · ${d.class.size} students.`;
+  const lk = d.locked.length ? `<p class="msg warn">Locked after too many wrong PINs: roll ${d.locked.join(', ')}. If a student says someone else did this, press Reset for that roll: <span id="lkBtns">${d.locked.map(r => `<button class="ghost" style="min-height:0;padding:4px 10px;font-size:13px" data-reset="${r}">Reset ${r}</button>`).join(' ')}</span></p>` : '';
+  $('#tables').innerHTML = lk + d.tasks.map(t => {
+    const done = t.rows.filter(r => r.accepted).length;
+    return `<h3>Grade ${t.grade} ${t.subject}: ${esc(t.title)}</h3>
+      <p class="muted">${done} done · ${t.rows.length} started · <a href="index.html?class=${C.code}&task=${t.id}" target="_blank">student view</a></p>
+      ${t.rows.length ? `<div class="tw"><table><tr><th>Roll</th><th>Predicted</th><th>Tries</th><th>Looks real</th><th>Ask about</th><th></th></tr>${t.rows.map(r => `<tr><td>${r.roll}</td><td>${esc(r.prediction ?? '–')}</td><td>${r.attempts}</td><td>${r.accepted ? '✓' : ''}</td><td>${esc(r.flags.join('; '))}</td><td><button class="ghost" style="min-height:0;padding:4px 10px;font-size:13px" data-reset="${r.roll}">Reset</button></td></tr>`).join('')}</table></div>` : ''}
+      <p>${t.revealed ? '<span class="locked">Class results are open</span>' : `<button class="ghost" data-reveal="${t.id}">Open class results to students</button>`}</p>`;
+  }).join('');
+  document.querySelectorAll('[data-reset]').forEach(b => b.onclick = async () => { if (confirm(`Reset roll ${b.dataset.reset}? This clears their PIN, predictions and tries for all tasks.`)) { await api('/api/reset', { class: C.code, key: C.key, roll: +b.dataset.reset }); open(); } });
+  document.querySelectorAll('[data-reveal]').forEach(b => b.onclick = async () => { await api('/api/reveal', { class: C.code, key: C.key, task: b.dataset.reveal }); open(); });
+  $('#cards').innerHTML = `<div class="card print-only"><h2>2-minute checks</h2><p>Do this in class, without phones, the day after the homework. One question each, on a fresh case.</p></div>` +
+    TASKS.map(t => `<div class="card"><span class="chip">Grade ${t.grade} ${t.subject}</span><h3>2-minute check: ${esc(t.title)}</h3><ol>${t.fresh.map(q => `<li>${esc(q)}</li>`).join('')}</ol><p class="muted">Also ask 2 students to read out the sentence their family member wrote.</p></div>`).join('');
+}
+if (C) open();
+</script>
+</body>
+</html>
