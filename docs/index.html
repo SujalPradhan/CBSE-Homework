@@ -6,191 +6,138 @@
 <title>Measure It Homework</title>
 <meta name="description" content="Hands-on maths and science homework for CBSE Grades 6–8, built on NCERT activities.">
 <link rel="stylesheet" href="style.css">
+<style>
+.phase{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:18px 0 6px}
+.q{margin:12px 0}
+.q textarea{width:100%;min-height:84px;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);resize:vertical}
+.q .unit{color:var(--ink-3);font-size:14px;margin-left:6px}
+.numrow{display:flex;align-items:center;gap:6px;max-width:260px}
+.ai{border-left:3px solid var(--warn);background:var(--warn-bg);padding:10px 14px;border-radius:0 10px 10px 0;margin:8px 0}
+.ai p{margin:4px 0;color:var(--ink)}
+.fb{margin:6px 0;padding:10px 12px;border-radius:10px}
+.fb.ok{background:var(--ok-bg);color:var(--ok)} .fb.warn{background:var(--warn-bg);color:var(--warn)} .fb.info{background:var(--chip);color:var(--ink-2)}
+.sheet dt{font-weight:700;margin-top:10px} .sheet dd{margin:2px 0 0;white-space:pre-wrap}
+.blank{border-bottom:1px solid #999;height:28px}
+.checks label{display:inline-flex;align-items:center;gap:6px;margin-right:16px;font-weight:600;color:var(--ink)}
+.checks input{width:auto}
+.note{font-size:14px;color:var(--ink-2);background:var(--chip);border-radius:10px;padding:10px 14px}
+</style>
 </head>
 <body>
 <main>
-  <h1>Measure It Homework</h1>
-  <p class="muted">Maths and science you do with your own hands, from your NCERT book. Grades 6–8.</p>
-
-  <!-- 1. Join -->
-  <section class="card" id="join">
-    <h2>Join your class</h2>
-    <form id="joinForm" class="row">
-      <div><label for="code">Class code (from your teacher)</label><input id="code" autocomplete="off" autocapitalize="characters" required maxlength="6" placeholder="e.g. K7P2QD"></div>
-      <div><label for="roll">Your roll number</label><input id="roll" type="number" inputmode="numeric" min="1" max="80" required></div>
-      <div><label for="pin">Your 4-digit PIN</label><input id="pin" type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" required autocomplete="off"></div>
-      <div style="flex:0 0 auto"><button type="submit">Go</button></div>
-    </form>
-    <p class="muted" style="margin-top:10px">First time? Make up any 4 digits and write them in your notebook. Use the same PIN every time. We only keep your class code and roll number: no names, no photos.</p>
-    <p class="msg warn hide" id="joinErr"></p>
-  </section>
-
-  <!-- 2. Pick a task -->
-  <section id="pick" class="hide">
-    <div class="card">
-      <div class="row" style="align-items:center"><p style="margin:0">Class <b id="whoCode"></b> · Roll <b id="whoRoll"></b></p><div style="flex:0 0 auto"><button class="ghost" id="leave">Change</button></div></div>
-    </div>
-    <div class="tasks" id="taskList"></div>
-  </section>
-
-  <!-- 3. Do a task -->
-  <section id="task" class="hide">
-    <p style="margin-top:14px"><a href="#" id="back">← All tasks</a></p>
-    <div class="card">
-      <span class="chip" id="tGrade"></span><span class="chip" id="tTime"></span>
-      <h2 id="tTitle" style="margin-top:10px"></h2>
-      <p id="tHook"></p>
-      <p class="muted" id="tChapter"></p>
-      <h3>You need</h3><ul class="plain" id="tMaterials"></ul>
-      <p class="msg warn hide" id="tSafety"></p>
-    </div>
-
-    <div class="card" id="predictCard">
-      <h2>Step 1 · Predict first</h2>
-      <p id="pQ"></p>
-      <div id="pInput"></div>
-      <p class="muted">Your guess is locked once you press the button. Being wrong is fine. It is how we learn.</p>
-      <p class="msg warn hide" id="pErr"></p>
-    </div>
-
-    <div class="card" id="doCard">
-      <h2>Step 2 · Do it</h2>
-      <div id="personal" class="hide"></div>
-      <div id="tSteps"></div>
-    </div>
-
-    <div class="card" id="enterCard">
-      <h2>Step 3 · Enter what you measured</h2>
-      <form id="mForm"><div class="row" id="mFields"></div>
-        <div class="row hide" id="sunFields" style="margin-top:10px">
-          <div><label for="city">City (or nearest big city)</label><select id="city"></select></div>
-          <div><label for="when">Date and time you measured the shadows</label><input id="when" type="datetime-local"></div>
-        </div>
-        <p style="margin-top:14px"><button type="submit" id="mBtn">Check my measurements</button> <span class="muted" id="left"></span></p>
-      </form>
-      <div id="result"></div>
-    </div>
-
-    <div class="card hide" id="explainCard">
-      <h2>Step 4 · Teach it back</h2>
-      <p id="tExplain"></p>
-    </div>
-
-    <div class="card" id="poolCard">
-      <h2>Our class</h2>
-      <div id="pool"><p class="muted">Class results appear here after your teacher opens them.</p></div>
-    </div>
-  </section>
-<p class="muted" style="margin-top:28px">Teachers: <a href="teacher.html">make a class code</a> · <a href="checklist.html">How these tasks hold up against AI</a></p>
+  <div class="no-print">
+    <h1><a href="./" style="color:inherit;text-decoration:none">Measure It Homework</a></h1>
+    <p class="muted">Maths and science you do with your own hands, from your NCERT book. Grades 6–8.</p>
+  </div>
+  <div id="list"></div>
+  <div id="one" class="hide"></div>
+  <p class="muted no-print" style="margin-top:28px">For teachers: <a href="teacher.html">answer keys, rubrics and printable sheets</a> · <a href="checklist.html">How these were designed and tested</a></p>
 </main>
-<script src="common.js"></script>
+<script src="assignments.js"></script>
 <script>
-let TASKS = [], CITY = [], me = store.get('me'), cur = null, choice = null;
-const qs = new URLSearchParams(location.search);
-if (qs.get('class')) $('#code').value = qs.get('class').toUpperCase();
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const load = id => { try { return JSON.parse(localStorage.getItem('mi:' + id)) || {}; } catch { return {}; } };
+const save = (id, a) => { try { localStorage.setItem('mi:' + id, JSON.stringify(a)); } catch {} };
+const PHASES = ['Predict', 'Do it', 'Record', 'Calculate', 'Explain', 'Teach it back'];
 
-async function boot() {
-  const r = await api('/api/tasks');
-  if (r.error) { $('#joinErr').textContent = r.error; $('#joinErr').classList.remove('hide'); return; }
-  TASKS = r.tasks; CITY = r.cities;
-  if (me && me.pin && (!qs.get('class') || qs.get('class').toUpperCase() === me.code)) showPick();
+function route() {
+  const q = new URLSearchParams(location.search), id = location.hash.slice(1) || q.get('a'), A = ASSIGNMENTS.find(x => x.id === id);
+  if (!A) { showList(); return; }
+  if (q.get('print') !== null) return showPrint(A);
+  showOne(A);
 }
-$('#joinForm').onsubmit = async e => {
-  e.preventDefault();
-  const code = $('#code').value.trim().toUpperCase(), roll = +$('#roll').value, pin = $('#pin').value;
-  const r = await api(`/api/status?class=${encodeURIComponent(code)}&roll=${roll}&pin=${pin}&task=${TASKS[0].id}`);
-  if (r.error) { $('#joinErr').textContent = r.error; $('#joinErr').classList.remove('hide'); return; }
-  me = { code, roll, pin }; store.set('me', me); showPick();
-};
-$('#leave').onclick = () => { me = null; store.set('me', null); show('join'); };
-$('#back').onclick = e => { e.preventDefault(); history.replaceState(null, '', location.pathname + (me ? `?class=${me.code}` : '')); showPick(); };
+addEventListener('hashchange', route);
 
-function show(id) { for (const s of ['join', 'pick', 'task']) $('#' + s).classList.toggle('hide', s !== id); scrollTo(0, 0); }
-
-async function showPick() {
-  $('#whoCode').textContent = me.code; $('#whoRoll').textContent = me.roll;
-  if (qs.get('task')) { const t = qs.get('task'); qs.delete('task'); return openTask(t); }
-  show('pick');
-  $('#taskList').innerHTML = TASKS.map(t => `<button class="task" data-id="${t.id}"><span class="chip">Grade ${t.grade}</span><span class="chip">${t.subject}</span><b>${esc(t.title)}</b><span class="muted">${t.minutes} min</span></button>`).join('');
-  document.querySelectorAll('.task').forEach(b => b.onclick = () => openTask(b.dataset.id));
+function showList() {
+  $('#one').classList.add('hide'); $('#list').classList.remove('hide');
+  $('#list').innerHTML = `<div class="note" style="margin-top:12px">Each task asks you to <b>predict</b>, then <b>measure or test something at home</b>, then <b>explain</b>. You may use AI to help you understand, but do the activity yourself: your teacher will ask about <b>your</b> numbers in class.</div>
+  <div class="tasks">${ASSIGNMENTS.map(a => `<a class="task" href="#${a.id}" style="text-decoration:none"><span class="chip">Grade ${a.grade}</span><span class="chip">${a.subject}</span><b>${esc(a.title)}</b><span class="muted">${a.minutes} min · ${load(a.id)._done ? '✓ answer sheet ready' : 'not started'}</span></a>`).join('')}</div>`;
+  scrollTo(0, 0);
 }
 
-async function openTask(id) {
-  const r = await api(`/api/status?class=${me.code}&roll=${me.roll}&pin=${me.pin}&task=${id}`);
-  if (r.error) { me = null; store.set('me', null); show('join'); $('#joinErr').textContent = r.error; $('#joinErr').classList.remove('hide'); return; }
-  cur = r; const t = r.task; choice = null;
-  history.replaceState(null, '', `?class=${me.code}&task=${id}`);
-  show('task');
-  $('#tGrade').textContent = `Grade ${t.grade} · ${t.subject}`; $('#tTime').textContent = `about ${t.minutes} min`;
-  $('#tTitle').textContent = t.title; $('#tHook').textContent = t.hook; $('#tChapter').textContent = t.chapter;
-  $('#tMaterials').innerHTML = t.materials.map(m => `<li>${esc(m)}</li>`).join('');
-  $('#tSafety').textContent = t.safety ? '⚠ ' + t.safety : ''; $('#tSafety').classList.toggle('hide', !t.safety);
-  $('#tSteps').innerHTML = t.steps.map((s, i) => `<div class="step"><span class="num">${i + 1}</span><div>${esc(s)}</div></div>`).join('');
-  $('#tExplain').textContent = t.explainBack;
-  const p = t.personal;
-  $('#personal').classList.toggle('hide', !p);
-  if (p) $('#personal').innerHTML = `<p>Your numbers (different for each student):</p><p><span class="big">${p.a}</span> sheets &nbsp;and&nbsp; <span class="big">${p.b}</span> sheets</p>`;
-  $('#mFields').innerHTML = t.inputs.map(f => `<div><label for="f_${f.id}">${esc(f.label)} (${esc(f.unit)})</label><input id="f_${f.id}" name="${f.id}" type="number" step="any" min="${f.min}" max="${f.max}" inputmode="decimal" required></div>`).join('');
-  $('#sunFields').classList.toggle('hide', !t.sun);
-  if (t.sun) {
-    $('#city').innerHTML = '<option value="">Choose…</option>' + CITY.map(c => `<option>${esc(c)}</option>`).join('');
-    $('#when').value = ''; $('#when').max = new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 16);
+function field(Q, a, locked) {
+  const v = a[Q.id] ?? '', dis = locked ? 'disabled' : '';
+  if (Q.type === 'number') return `<div class="numrow"><input id="q_${Q.id}" type="number" step="any" inputmode="decimal" min="${Q.min}" max="${Q.max}" value="${esc(v)}" ${dis}><span class="unit">${esc(Q.unit)}</span></div>`;
+  if (Q.type === 'choice') return `<div class="opts">${Q.options.map(o => `<button type="button" class="${v === o ? 'sel' : ''}" data-q="${Q.id}" data-o="${esc(o)}" ${dis}>${esc(o)}</button>`).join('')}</div>`;
+  if (Q.type === 'checks') return `<div class="checks">${Q.options.map(o => `<label><input type="checkbox" data-c="${Q.id}" value="${esc(o)}" ${(v || []).includes(o) ? 'checked' : ''} ${dis}> Sentence ${esc(o)}</label>`).join('')}</div>`;
+  return `<textarea id="q_${Q.id}" ${dis}>${esc(v)}</textarea>`;
+}
+
+function showOne(A) {
+  const a = load(A.id), locked = !!a._locked;
+  $('#list').classList.add('hide'); $('#one').classList.remove('hide');
+  const byPhase = p => A.questions.filter(q => q.phase === p);
+  let h = `<p style="margin-top:12px"><a href="#">← All tasks</a></p>
+  <section class="card"><span class="chip">Grade ${A.grade} · ${A.subject}</span><span class="chip">about ${A.minutes} min</span>
+    <h2 style="margin-top:10px">${esc(A.title)}</h2><p>${esc(A.intro)}</p>
+    <p class="muted">${esc(A.chapter)}</p>
+    <h3>You need</h3><ul class="plain">${A.materials.map(m => `<li>${esc(m)}</li>`).join('')}</ul>
+    ${A.safety ? `<p class="msg warn">⚠ ${esc(A.safety)}</p>` : ''}
+    ${A.aiText ? `<h3>What the AI said</h3><div class="ai">${A.aiText.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
+    ${A.together ? `<p class="note">👥 ${esc(A.together)}</p>` : ''}
+  </section>`;
+  const pq = byPhase('Predict');
+  h += `<section class="card"><div class="phase">Step 1 · Predict</div>${pq.map(Q => `<div class="q"><label>${esc(Q.label)}</label>${field(Q, a, locked)}</div>`).join('')}
+    ${locked ? `<span class="locked">🔒 Prediction locked</span>` : `<p class="muted">Lock your guess before you start. Being wrong is fine: that is how you learn.</p><button id="lock">Lock my prediction</button>`}</section>`;
+  h += `<section class="card" style="opacity:${locked ? 1 : .5}"><div class="phase">Step 2 · Do it</div>${A.steps.map((s, i) => `<div class="step"><span class="num">${i + 1}</span><div>${esc(s)}</div></div>`).join('')}</section>`;
+  h += `<section class="card" style="opacity:${locked ? 1 : .5}">`;
+  let n = 3;
+  for (const p of PHASES.slice(2)) {
+    const qs = byPhase(p); if (!qs.length) continue;
+    h += `<div class="phase">Step ${n++} · ${p}</div>` + qs.map(Q => `<div class="q"><label for="q_${Q.id}">${esc(Q.label)}</label>${field(Q, a, !locked)}</div>`).join('');
   }
-  $('#result').innerHTML = '';
-  renderPredict(); renderState(); loadPool();
-}
+  h += `<p style="margin-top:16px"><button id="check" ${locked ? '' : 'disabled'}>Check my work</button> <button class="ghost" id="sheet" ${locked ? '' : 'disabled'}>My answer sheet</button></p><div id="fb"></div></section><div id="out"></div>`;
+  $('#one').innerHTML = h; scrollTo(0, 0);
 
-function renderPredict() {
-  const t = cur.task;
-  $('#pQ').textContent = t.predict.q; $('#pErr').classList.add('hide');
-  if (cur.prediction != null) { $('#pInput').innerHTML = `<span class="locked">🔒 Your prediction: ${esc(cur.prediction)}${t.predict.unit ? ' ' + esc(t.predict.unit) : ''}</span>`; return; }
-  $('#pInput').innerHTML = t.predict.options
-    ? `<div class="opts">${t.predict.options.map(o => `<button type="button" data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div><p style="margin-top:10px"><button id="lockBtn" disabled>Lock my prediction</button></p>`
-    : `<div class="row"><div><label for="pNum">My guess (${esc(t.predict.unit)})</label><input id="pNum" type="number" step="any" min="${t.predict.min}" max="${t.predict.max}" inputmode="decimal"></div><div style="flex:0 0 auto"><button id="lockBtn">Lock my prediction</button></div></div>`;
-  document.querySelectorAll('.opts button').forEach(b => b.onclick = () => { choice = b.dataset.o; document.querySelectorAll('.opts button').forEach(x => x.classList.toggle('sel', x === b)); $('#lockBtn').disabled = false; });
-  $('#lockBtn').onclick = async () => {
-    const value = t.predict.options ? choice : $('#pNum').value;
-    const r = await api('/api/predict', { class: me.code, roll: me.roll, pin: me.pin, task: t.id, value });
-    if (r.error) { $('#pErr').textContent = r.error; $('#pErr').classList.remove('hide'); return; }
-    cur.prediction = r.locked; renderPredict(); renderState();
+  const read = () => {
+    const r = { ...load(A.id) };
+    for (const Q of A.questions) {
+      if (Q.type === 'number') { const x = $('#q_' + Q.id).value; r[Q.id] = x === '' ? '' : Number(x); }
+      else if (Q.type === 'text') r[Q.id] = $('#q_' + Q.id).value;
+      else if (Q.type === 'checks') r[Q.id] = [...document.querySelectorAll(`[data-c="${Q.id}"]:checked`)].map(x => x.value);
+    }
+    return r;
   };
+  document.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { const r = read(); r[b.dataset.q] = b.dataset.o; save(A.id, r); document.querySelectorAll(`[data-q="${b.dataset.q}"]`).forEach(x => x.classList.toggle('sel', x === b)); });
+  $('#one').addEventListener('input', () => save(A.id, read()));
+  if ($('#lock')) $('#lock').onclick = () => {
+    const r = read();
+    if (pq.some(Q => r[Q.id] === '' || r[Q.id] == null)) return alert('Make your prediction first.');
+    r._locked = Date.now(); save(A.id, r); showOne(A);
+  };
+  $('#check').onclick = () => {
+    const r = read(); save(A.id, r);
+    const f = A.feedback(r), empty = A.questions.filter(Q => Q.phase !== 'Predict' && (r[Q.id] === '' || r[Q.id] == null || (Array.isArray(r[Q.id]) && !r[Q.id].length)));
+    $('#fb').innerHTML = (f.length ? f : [['info', 'Fill in your measurements to get feedback.']]).map(([t, m]) => `<div class="fb ${t}">${esc(m)}</div>`).join('') +
+      (empty.length ? `<div class="fb info">Still empty: ${empty.map(Q => esc(Q.label.split(/[?:.]/)[0])).join(' · ')}</div>` : '');
+  };
+  $('#sheet').onclick = () => { const r = read(); r._done = true; save(A.id, r); showSheet(A, r); };
 }
 
-function renderState() {
-  const ready = cur.prediction != null, done = cur.accepted;
-  $('#doCard').style.opacity = ready ? 1 : .45; $('#enterCard').style.opacity = ready ? 1 : .45;
-  $('#mBtn').disabled = !ready || done || cur.left <= 0;
-  $('#left').textContent = done ? '' : !ready ? 'Lock your prediction first.' : `${cur.left} tries left`;
-  $('#explainCard').classList.toggle('hide', !done);
-  if (done && !$('#result').innerHTML) $('#result').innerHTML = '<div class="msg ok"><b>Finished.</b> Your measurements looked like real ones.</div>';
+function showSheet(A, r) {
+  const val = Q => { const v = r[Q.id]; return Array.isArray(v) ? (v.length ? 'Sentences ' + v.join(', ') : '—') : (v === '' || v == null ? '—' : v + (Q.unit && Q.type === 'number' ? ' ' + Q.unit : '')); };
+  $('#out').innerHTML = `<section class="card sheet"><h2>My answer sheet</h2><p class="muted">${esc(A.title)} · Grade ${A.grade} ${A.subject}${r._locked ? ' · prediction locked ' + new Date(r._locked).toLocaleString() : ''}</p>
+    <dl>${A.questions.map(Q => `<dt>${esc(Q.phase)}: ${esc(Q.label)}</dt><dd>${esc(val(Q))}</dd>`).join('')}</dl>
+    <p class="no-print" style="margin-top:14px"><button onclick="print()">Print or save as PDF</button> <button class="ghost" id="copy">Copy text</button></p>
+    <p class="muted no-print">Copy this into your notebook, or show it to your teacher. Bring your notebook with the adult's sentence to class.</p></section>`;
+  $('#copy').onclick = () => navigator.clipboard.writeText(`${A.title}\n` + A.questions.map(Q => `${Q.label}\n→ ${val(Q)}`).join('\n\n')).then(() => $('#copy').textContent = 'Copied ✓');
+  $('#out').scrollIntoView({ behavior: 'smooth' });
 }
 
-$('#mForm').onsubmit = async e => {
-  e.preventDefault();
-  const values = Object.fromEntries(cur.task.inputs.map(f => [f.id, $('#f_' + f.id).value]));
-  const body = { class: me.code, roll: me.roll, pin: me.pin, task: cur.task.id, values };
-  if (cur.task.sun) { body.city = $('#city').value; body.when = $('#when').value; }
-  $('#mBtn').disabled = true;
-  const r = await api('/api/submit', body);
-  if (r.error) { $('#result').innerHTML = `<div class="msg warn">${esc(r.error)}</div>`; }
-  else if (r.ok) { cur.accepted = true; $('#result').innerHTML = '<div class="msg ok"><b>Your measurements look like real ones.</b> Now do Step 4. Your teacher will ask you a quick question about it in class.</div>'; }
-  else { $('#result').innerHTML = `<div class="msg warn"><b>${r.free ? 'Check what you typed.' : 'Not yet.'}</b> ${r.free ? 'This did not use up a try.' : 'Something does not add up:'}<ul>${r.messages.map(m => `<li>${esc(m)}</li>`).join('')}</ul></div>`; }
-  if (r.left != null) cur.left = r.left; else if (r.status === 429) cur.left = 0;
-  renderState();
-};
-
-async function loadPool() {
-  const t = cur.task, r = await api(`/api/pool?class=${me.code}&task=${t.id}`);
-  if (r.error) return;
-  const vals = r.values, pv = t.pool;
-  let chart;
-  if (t.id === 'g7-sci-pendulum') chart = scatter(vals.flatMap(v => v.pts), 'length (cm)', 'time for 10 swings (s)');
-  else if (pv.x === 'winner') chart = bars(tally(vals.map(v => v.winner)), pv.label);
-  else chart = dotplot(vals.map(v => v[pv.x]), pv.label);
-  const preds = t.predict.options ? bars(tally(r.predictions), 'What we predicted') : dotplot(r.predictions.map(Number).filter(Number.isFinite), 'What we predicted');
-  $('#pool').innerHTML = `<h3>${esc(pv.label)}</h3>${chart}<h3>What we predicted</h3>${preds}<p class="muted">${vals.length} accepted measurements, ${r.predictions.length} predictions.</p>`;
+// Paper worksheet for students without a device.
+function showPrint(A) {
+  $('#list').classList.add('hide'); $('#one').classList.remove('hide');
+  const lines = Q => Q.type === 'text' ? '<div class="blank"></div><div class="blank"></div><div class="blank"></div>' : Q.type === 'number' ? `<div class="blank" style="width:200px"></div><span class="muted">${esc(Q.unit)}</span>` : `<p>${Q.options.map(o => '☐ ' + esc(Q.type === 'checks' ? 'Sentence ' + o : o)).join('&nbsp;&nbsp;&nbsp; ')}</p>`;
+  $('#one').innerHTML = `<section class="card"><p class="muted">Name: ____________________ &nbsp; Class: ______ &nbsp; Roll: ______</p>
+    <h2>${esc(A.title)}</h2><p>${esc(A.intro)}</p><p class="muted">Grade ${A.grade} ${A.subject} · ${esc(A.chapter)} · about ${A.minutes} min</p>
+    <h3>You need</h3><p>${A.materials.map(esc).join(' · ')}</p>${A.safety ? `<p><b>Safety:</b> ${esc(A.safety)}</p>` : ''}
+    ${A.aiText ? `<h3>What the AI said</h3>${A.aiText.map(t => `<p>${esc(t)}</p>`).join('')}` : ''}
+    <h3>Steps</h3><ol>${A.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>${A.together ? `<p><i>${esc(A.together)}</i></p>` : ''}
+    ${A.questions.map(Q => `<div class="q"><b>${esc(Q.phase)}:</b> ${esc(Q.label)}${lines(Q)}</div>`).join('')}
+    <p class="no-print"><button onclick="print()">Print</button></p></section>`;
 }
-boot();
+route();
 </script>
 </body>
 </html>

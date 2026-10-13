@@ -4,82 +4,54 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Measure It: Teachers</title>
-<meta name="description" content="Teacher page: create a class code, see who has finished, open class results, print 2-minute checks.">
+<meta name="description" content="Teacher notes for five hands-on homework tasks: links to share, answer keys, rubrics, misconceptions and 2-minute class checks.">
 <link rel="stylesheet" href="style.css">
+<style>
+details.card>summary{cursor:pointer;list-style:none}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary h2{display:inline}
+details.card[open]>summary{margin-bottom:8px}
+.lbl{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin:16px 0 4px}
+.link{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.link code{background:var(--chip);padding:8px 10px;border-radius:8px;font-size:14px;word-break:break-all;flex:1 1 240px}
+td:first-child{white-space:nowrap;font-weight:700}
+</style>
 </head>
 <body>
 <main>
   <h1 class="no-print">For teachers</h1>
-  <p class="muted no-print">Three things to do: make a class code, share one link, glance at the list. No login, no marking.</p>
-
-  <section class="card no-print" id="make">
-    <h2>1 · Make a class code</h2>
-    <form id="mk" class="row">
-      <div><label for="cname">Class name (optional)</label><input id="cname" maxlength="60" placeholder="e.g. 7B Science"></div>
-      <div><label for="csize">Students in class</label><input id="csize" type="number" min="1" max="80" value="40"></div>
-      <div style="flex:0 0 auto"><button type="submit">Make code</button></div>
-    </form>
-    <div id="made"></div>
-    <p class="muted" style="margin-top:12px">Already have a code? <a href="#" id="openOld">Open its dashboard</a>.</p>
-  </section>
-
-  <section id="dash" class="hide">
-    <div class="card no-print">
-      <h2>2 · Share this link with students</h2>
-      <p><a id="studentLink" target="_blank"></a></p>
-      <p class="muted">Students enter their roll number and make up a 4-digit PIN. If a student forgets their PIN, press Reset next to their roll. Each task asks them to predict first, then measure at home, then teach it back to someone at home (written in their notebook).</p>
-      <p class="muted">Keep this page's address private: it contains your teacher key. <span id="keyNote"></span></p>
-    </div>
-    <div class="card no-print">
-      <h2>3 · Who has finished</h2>
-      <p class="muted">✓ means the numbers look like real measurements. It is not proof the student did the work: an AI can also produce realistic numbers. The real check is the 2-minute question in class, plus the family member's sentence in the notebook. Flags are things to ask about, not proof of copying.</p>
-      <div id="tables"></div>
-      <p style="margin-top:12px"><button class="ghost" id="refresh">Refresh</button> <button class="ghost" id="printBtn">Print 2-minute checks</button></p>
-    </div>
-    <div id="cards"></div>
-  </section>
-<p class="muted no-print" style="margin-top:28px"><a href="index.html">Student page</a> · <a href="checklist.html">How these tasks hold up against AI</a></p>
+  <p class="muted no-print">How to use: pick a task, send its link (or print the sheet), and the next day spend 2 minutes on the class check. No login, no setup, nothing to mark online.</p>
+  <div class="card no-print">
+    <p><b>What students bring back:</b> their answer sheet (in the notebook, printed, or as a photo) with the sentence a family member said back to them.</p>
+    <p><b>How to check in 2 minutes:</b> ask the class-check questions on a fresh case, with phones away, and ask two students to read their family member’s sentence. Use the rubric to sort a few notebooks into Got it, Partly or Not yet.</p>
+    <p style="margin:0"><b>About AI:</b> an AI can write a convincing answer sheet for every task. It cannot measure the student’s table or taste their drink. The class check shows who learned it.</p>
+  </div>
+  <div id="list"></div>
+  <p class="no-print" style="margin-top:16px"><button class="ghost" onclick="document.querySelectorAll('details').forEach(d=>d.open=true);print()">Print all teacher notes</button></p>
+  <p class="muted no-print" style="margin-top:20px"><a href="./">Student page</a> · <a href="checklist.html">How these were designed and tested</a></p>
 </main>
-<script src="common.js"></script>
+<script src="assignments.js"></script>
+<script src="teacher-notes.js"></script>
 <script>
-let C = null, TASKS = [];
-const hash = new URLSearchParams(location.hash.slice(1));
-if (hash.get('class') && hash.get('key')) C = { code: hash.get('class'), key: hash.get('key') };
-
-$('#mk').onsubmit = async e => {
-  e.preventDefault();
-  const r = await api('/api/class', { name: $('#cname').value, size: +$('#csize').value });
-  if (r.error) { $('#made').innerHTML = `<p class="msg warn">${esc(r.error)}</p>`; return; }
-  C = { code: r.code, key: r.key }; location.hash = `class=${r.code}&key=${r.key}`;
-  $('#made').innerHTML = `<p class="msg ok">Your class code is <b style="font-size:22px">${r.code}</b>. Bookmark this page now: it is the only way back to your dashboard.</p>`;
-  open();
-};
-$('#openOld').onclick = e => { e.preventDefault(); const code = prompt('Class code'), key = code && prompt('Teacher key (from your bookmarked link)'); if (code && key) { C = { code: code.toUpperCase(), key }; location.hash = `class=${C.code}&key=${key}`; open(); } };
-$('#refresh').onclick = () => open();
-$('#printBtn').onclick = () => print();
-
-async function open() {
-  const [t, d] = await Promise.all([api('/api/tasks'), api(`/api/dash?class=${C.code}&key=${encodeURIComponent(C.key)}`)]);
-  if (d.error) { $('#made').innerHTML = `<p class="msg warn">${esc(d.error)}</p>`; return; }
-  TASKS = t.tasks;
-  $('#dash').classList.remove('hide');
-  const link = new URL('index.html', location.href); link.search = `class=${C.code}`; link.hash = '';
-  $('#studentLink').href = $('#studentLink').textContent = link.href;
-  $('#keyNote').textContent = `Class ${d.class.code}${d.class.name ? ' · ' + d.class.name : ''} · ${d.class.size} students.`;
-  const lk = d.locked.length ? `<p class="msg warn">Locked after too many wrong PINs: roll ${d.locked.join(', ')}. If a student says someone else did this, press Reset for that roll: <span id="lkBtns">${d.locked.map(r => `<button class="ghost" style="min-height:0;padding:4px 10px;font-size:13px" data-reset="${r}">Reset ${r}</button>`).join(' ')}</span></p>` : '';
-  $('#tables').innerHTML = lk + d.tasks.map(t => {
-    const done = t.rows.filter(r => r.accepted).length;
-    return `<h3>Grade ${t.grade} ${t.subject}: ${esc(t.title)}</h3>
-      <p class="muted">${done} done · ${t.rows.length} started · <a href="index.html?class=${C.code}&task=${t.id}" target="_blank">student view</a></p>
-      ${t.rows.length ? `<div class="tw"><table><tr><th>Roll</th><th>Predicted</th><th>Tries</th><th>Looks real</th><th>Ask about</th><th></th></tr>${t.rows.map(r => `<tr><td>${r.roll}</td><td>${esc(r.prediction ?? '–')}</td><td>${r.attempts}</td><td>${r.accepted ? '✓' : ''}</td><td>${esc(r.flags.join('; '))}</td><td><button class="ghost" style="min-height:0;padding:4px 10px;font-size:13px" data-reset="${r.roll}">Reset</button></td></tr>`).join('')}</table></div>` : ''}
-      <p>${t.revealed ? '<span class="locked">Class results are open</span>' : `<button class="ghost" data-reveal="${t.id}">Open class results to students</button>`}</p>`;
-  }).join('');
-  document.querySelectorAll('[data-reset]').forEach(b => b.onclick = async () => { if (confirm(`Reset roll ${b.dataset.reset}? This clears their PIN, predictions and tries for all tasks.`)) { await api('/api/reset', { class: C.code, key: C.key, roll: +b.dataset.reset }); open(); } });
-  document.querySelectorAll('[data-reveal]').forEach(b => b.onclick = async () => { await api('/api/reveal', { class: C.code, key: C.key, task: b.dataset.reveal }); open(); });
-  $('#cards').innerHTML = `<div class="card print-only"><h2>2-minute checks</h2><p>Do this in class, without phones, the day after the homework. One question each, on a fresh case.</p></div>` +
-    TASKS.map(t => `<div class="card"><span class="chip">Grade ${t.grade} ${t.subject}</span><h3>2-minute check: ${esc(t.title)}</h3><ol>${t.fresh.map(q => `<li>${esc(q)}</li>`).join('')}</ol><p class="muted">Also ask 2 students to read out the sentence their family member wrote.</p></div>`).join('');
-}
-if (C) open();
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const base = new URL('./', location.href).href;
+document.getElementById('list').innerHTML = ASSIGNMENTS.map((a, i) => {
+  const t = TEACHER[a.id], link = base + '#' + a.id;
+  return `<details class="card" ${i === 0 ? 'open' : ''}><summary><span class="chip">Grade ${a.grade} · ${a.subject}</span><span class="chip">${a.minutes} min</span><br><h2>${esc(a.title)}</h2></summary>
+    <p><b>Learning objective:</b> ${esc(a.objective)}</p>
+    <p class="muted">${esc(a.chapter)} · ${esc(a.pattern)} · Prep: ${esc(t.prep)}</p>
+    <div class="lbl">Send this to students</div>
+    <div class="link no-print"><code>${esc(link)}</code><button class="ghost" data-copy="${esc(link)}">Copy link</button><a href="./?print&a=${a.id}" target="_blank">Printable sheet</a></div>
+    <div class="lbl">Expected results</div><p>${esc(t.answers)}</p>
+    <div class="lbl">Rubric</div>
+    <div class="tw"><table>${t.rubric.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}</table></div>
+    <div class="lbl">Watch for these misconceptions</div><ul class="plain">${t.misconceptions.map(m => `<li>${esc(m)}</li>`).join('')}</ul>
+    <div class="lbl">2-minute class check (next day, no phones)</div><ol>${t.classCheck.map(q => `<li>${esc(q)}</li>`).join('')}</ol>
+    <div class="lbl">If students use AI</div><p>${esc(t.ai)}</p>
+    <div class="lbl">Using it in class</div><p>${esc(t.collab)}</p>
+  </details>`;
+}).join('');
+document.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => navigator.clipboard.writeText(b.dataset.copy).then(() => b.textContent = 'Copied ✓'));
 </script>
 </body>
 </html>

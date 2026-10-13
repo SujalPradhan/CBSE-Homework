@@ -3,82 +3,183 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI-Proof Checklist</title>
-<meta name="description" content="How each homework task holds up when a student uses an AI agent or copies a friend, tested by an AI red-team.">
+<title>AI-Resilient Homework Design</title>
+<meta name="description" content="Research, design checklist, five prototype assignments, red-team results and a validation plan for AI-resilient CBSE Grade 6–8 homework.">
 <link rel="stylesheet" href="style.css">
-<style>main{max-width:980px} td:first-child{font-weight:600;white-space:nowrap} .y{color:var(--ok);font-weight:700} .p{color:var(--warn);font-weight:700} .n{color:#c2410c;font-weight:700}</style>
+<style>
+main{max-width:920px}
+h2{margin-top:6px}
+.tag{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:5px;margin-right:4px}
+.m{background:var(--accent);color:var(--accent-ink)} .d{background:var(--chip);color:var(--ink-2)}
+.ev{font-size:13px;color:var(--ink-3)}
+td{font-size:14px} td:first-child{font-weight:700}
+.y{color:var(--ok);font-weight:700} .p{color:var(--warn);font-weight:700} .n{color:#c2410c;font-weight:700}
+ol.toc{columns:2;font-size:15px}
+@media (max-width:600px){ol.toc{columns:1}}
+</style>
 </head>
 <body>
 <main>
-  <h1>Does it still teach if a student uses AI?</h1>
-  <p class="muted">Each task was attacked by an AI agent acting as a student with a coding agent and a browser, on 13 Oct 2026. It could not see the grading code. Below is what happened, what we fixed, and what we could not fix.</p>
+  <h1>AI-resilient homework for CBSE Grades 6–8</h1>
+  <p class="muted">Design notes for Anand S · 13 Oct 2026 · <a href="./">Student page</a> · <a href="teacher.html">Teacher page</a></p>
+  <ol class="toc">
+    <li><a href="#s1">Executive summary</a></li><li><a href="#s2">Research findings</a></li><li><a href="#s3">Principles → requirements</a></li>
+    <li><a href="#s4">Design framework</a></li><li><a href="#s5">Evaluation checklist</a></li><li><a href="#s6">Five assignments</a></li>
+    <li><a href="#s7">Red-team report</a></li><li><a href="#s8">Minimal product</a></li><li><a href="#s9">Validation plan</a></li><li><a href="#s10">Next steps</a></li>
+  </ol>
 
-  <section class="card">
-    <h2>The short answer</h2>
-    <p><b>What the server stops:</b> copying a classmate's numbers (exact or almost exact), using someone else's roll number, careless made-up numbers, and numbers that break the textbook rule or basic physics.</p>
-    <p><b>What it does not stop:</b> an AI that knows the physics can invent realistic numbers, first try, for every task.</p>
-    <p><b>So the design puts the real check in class.</b> A ✓ on the teacher's list means "the numbers look real". It does not mean "done". The 2-minute question on a fresh case, plus the family member's sentence in the notebook, is what shows learning. This matches the <i>presence</i> pattern in <a href="https://www.s-anand.net/blog/the-exam-is-a-hypothesis/">The Exam Is a Hypothesis</a>.</p>
+  <section class="card" id="s1">
+    <h2>1. Executive summary</h2>
+    <p><b>Problem.</b> A chatbot can now write a complete, convincing answer to most worksheet homework. India's curriculum framework names this risk directly: students "outsourcing" thinking to AI through "homework and assignments being done by AI" (<a href="https://ncert.nic.in/pdf/NCFSE-2023-August_2023.pdf">NCF-SE 2023</a>, PDF p.193).</p>
+    <p><b>Proposed solution.</b> Five homework tasks built on activities already in the NCERT books. In each one the student predicts, then measures or tests something at home, then explains, then teaches it back to a family member. The website shows the tasks directly. Students need no login, and there is nothing to grade online. A teacher sends one link and spends 2 minutes the next day on a fresh-case question in class.</p>
+    <p><b>What it does and does not do.</b> None of the tasks is AI-proof. In our red-team, a chatbot wrote a plausible answer sheet for all five. The value is that an honest student learns from doing it, and that the in-class check shows who did. That second point is untested until a real classroom trial.</p>
   </section>
 
-  <section class="card">
-    <h2>Task by task</h2>
+  <section class="card" id="s2">
+    <h2>2. Research findings</h2>
     <div class="tw"><table>
-      <tr><th>Task</th><th>AI alone</th><th>Copy a classmate</th><th>One script for the whole class</th><th>If faked, does it still teach?</th></tr>
-      <tr><td>G6 Science · handspans</td><td>Passes, 1st try</td><td>Flagged (exact and near copies)</td><td>Passes; flagged only if submitted within 3 min of predicting</td><td><span class="p">Partly.</span> Faking needs count × handspan = table length, the idea that a bigger unit gives a smaller count.</td></tr>
-      <tr><td>G6 Maths · hand area</td><td>Passes, 1st try</td><td>Flagged</td><td>Same as above</td><td><span class="p">Partly.</span> Faking needs the textbook counting rule (full + more-than-half squares). Earlier versions skipped it; fixed.</td></tr>
-      <tr><td>G7 Science · pendulum</td><td>Passes, 1st try</td><td>Flagged</td><td>Same as above</td><td><span class="p">Partly.</span> Faking needs “4× longer → 2× the time”, close to the lesson. The formula itself is above Grade 7.</td></tr>
-      <tr><td>G7 Maths · paper</td><td>Passes, 1st try</td><td>Fails unless the classmate's sheet counts happen to be close (each student gets different counts)</td><td>Same as above</td><td><span class="y">Yes.</span> Faking means multiplying and dividing decimals to thousandths, which is the lesson.</td></tr>
-      <tr><td>G8 Maths · shadow</td><td>Passes, 1st try</td><td>Flagged; the same numbers at a different time are rejected by the sun check</td><td>Same as above</td><td><span class="n">Mostly no.</span> The hard part to fake is the sun's angle (astronomy), not the a : b :: c : d step.</td></tr>
-      <tr><td>G8 Science · bottle</td><td>Passes, 1st try</td><td>Flagged</td><td>Same as above</td><td><span class="n">No.</span> Faking needs Torricelli's law, which is well beyond Grade 8 and not the pressure-and-depth idea.</td></tr>
+      <tr><th>Finding</th><th>Implication for design</th></tr>
+      <tr><td>NCF-SE 2023 says homework "should not be intended to merely repeat what has been learnt in class, but rather to apply it to different contexts", must be age-appropriate, and students should be able to do it "on their own" without parents doing it for them. <span class="ev">(<a href="https://ncert.nic.in/pdf/NCFSE-2023-August_2023.pdf">NCF-SE 2023</a> §3.3.7, printed p.91)</span></td><td>Tasks apply a textbook idea in the student's own home. A family member is the audience for teach-back, not a helper.</td></tr>
+      <tr><td>The same framework warns that AI doing homework "starts stunting the growth of the capacities outsourced" and says "nothing more definitive can be said" yet. <span class="ev">(NCF-SE 2023, PDF p.193)</span></td><td>No official CBSE rule on AI and homework exists to design against, so we use Anand's tests (section 3).</td></tr>
+      <tr><td>In a field experiment with nearly 1,000 high-school students in Turkey, unrestricted GPT-4 raised practice scores by 48% but lowered later unassisted exam scores by 17%. A tutor version that avoided giving answers largely removed the harm. <span class="ev">(<a href="https://doi.org/10.1073/pnas.2422633122">Bastani et al., PNAS 2025</a>)</span></td><td>AI that hands out answers can hurt learning. Our feedback hints never give the answer. The real check happens without AI.</td></tr>
+      <tr><td>Students who predicted the outcome of a demonstration before seeing it understood it significantly better; students who only watched did no better than those who never saw it. <span class="ev">(<a href="https://doi.org/10.1119/1.1707018">Crouch et al., Am. J. Phys. 2004</a>)</span></td><td>Every task starts with a prediction, which the student locks before the activity.</td></tr>
+      <tr><td>Learning rises as engagement moves from passive to active to constructive to interactive. <span class="ev">(<a href="https://doi.org/10.1080/00461520.2014.965823">Chi &amp; Wylie 2014</a>, the ICAP framework; the authors present it as a hypothesis, and at least one later lab study found the opposite order)</span></td><td>Explanation questions and teach-back are "constructive" and "interactive"; copying an answer is "passive".</td></tr>
+      <tr><td>Homework shows a positive link with achievement, and the correlation is stronger in Grades 7–12 than K–6, though all studies had design flaws. US evidence. <span class="ev">(<a href="https://doi.org/10.3102/00346543076001001">Cooper, Robinson &amp; Patall 2006</a>)</span></td><td>Homework is worth doing at this age, as long as it is meaningful.</td></tr>
+      <tr><td>In rural India, 82.2% of 14–16-year-olds can use a smartphone; of those, 57% used it for education in the past week. Almost 90% have one at home. <span class="ev">(<a href="https://static.pib.gov.in/WriteReadData/specificdocs/documents/2025/feb/doc202524496701.pdf">ASER 2024 via PIB</a>; rural only, and ages 14–16 not 11–14)</span></td><td>Assume a shared parent phone at best. Every task has a printable paper version, and the activity itself needs no device.</td></tr>
     </table></div>
-    <p class="muted" style="margin-top:10px">“Flagged” means the teacher's list shows “Almost the same numbers as roll X”. Flags are prompts to ask a question, not proof.</p>
+    <p class="ev" style="margin-top:10px"><b>Curriculum check:</b> every task was checked against the current NCERT PDFs (all marked Reprint 2026-27) from ncert.nic.in; <a href="https://github.com/SujalPradhan/CBSE-Homework/blob/main/validation/ncert_sources.md">page references here</a>. <b>Gap:</b> the CBSE circulars on adopting the new NCERT books (Acad-29/2024, Acad-12/2025) returned "404 Not Found" from cbseacademic.nic.in, so CBSE's adoption of these books is not confirmed here from CBSE's own documents.</p>
   </section>
 
-  <section class="card">
-    <h2>The checklist, extended for schools</h2>
-    <p class="muted">The first six tests and the seventh are from Anand S's TDS ideation session. The last five are added for Grades 6–8.</p>
+  <section class="card" id="s3">
+    <h2>3. Principles → requirements</h2>
+    <p class="muted">From Anand S, <a href="https://www.s-anand.net/blog/the-exam-is-a-hypothesis/">The Exam Is a Hypothesis</a> and the <a href="https://talks.s-anand.net/2026-10-12-tds-ideation/">TDS ideation session</a> (12 Oct 2026). Those tests were written for graded online assessment; for homework we keep the intent and drop the grading machinery.</p>
     <div class="tw"><table>
-      <tr><th>Test</th><th>Question</th><th>How this site answers it</th></tr>
-      <tr><td>Learning</td><td>Is the step the student must do themselves the skill we want?</td><td>Measuring and the textbook method (counting rule, stacking sheets, a : b :: c : d). See the table above for where faking skips it.</td></tr>
-      <tr><td>Forward</td><td>Does one student's submission score for another?</td><td>Exact and near copies (within 2%) are flagged. Paper sheet counts and shadow times differ per student.</td></tr>
-      <tr><td>Solver</td><td>Would one shared tool score for everyone?</td><td><span class="n">Yes.</span> A patient script with varied numbers is not flagged. The in-class check is the defence.</td></tr>
-      <tr><td>Agent</td><td>Could an AI agent solve it through the student's browser?</td><td><span class="n">Yes</span>, for every task. That is why acceptance means “plausible”, not “done”.</td></tr>
-      <tr><td>Faking</td><td>Is faking costlier than doing it, and does faking still teach?</td><td>Costlier for a student without AI. With AI, it still teaches in 1 of 6 tasks, partly in 3, and barely in 2.</td></tr>
-      <tr><td>Oracle</td><td>Is grading server-side, robust and rate-limited?</td><td>Server-side, with 5 tries per student and messages that never give the answer. Typos are free. Class creation is limited to 10 per network per day, but a determined student could still map the tolerances.</td></tr>
-      <tr><td>Explain-back</td><td>Can the student explain how they learned it?</td><td>A family member writes one line in the notebook. The teacher asks two students to read theirs aloud.</td></tr>
-      <tr><td>Teacher load</td><td>At most 5 minutes per task per class?</td><td>Make a code, share a link, glance at the list, then a printed 2-minute check. No marking.</td></tr>
-      <tr><td>Device</td><td>Works on a shared parent phone?</td><td>Yes: one page, no app, no login. The measuring happens offline.</td></tr>
-      <tr><td>Safety and privacy</td><td>No personal data, no risky steps?</td><td>Only class code and roll number. An adult makes the bottle holes. No photos or audio.</td></tr>
-      <tr><td>Curriculum fit</td><td>Maps to an NCERT chapter?</td><td>Each task names its chapter and activity. <a href="https://github.com/SujalPradhan/CBSE-Homework/blob/main/validation/ncert_sources.md">Page references</a>.</td></tr>
-      <tr><td>Age fit</td><td>Readable for 11–14, under 30 minutes?</td><td>20–30 minutes each. Wording not yet tested with real students.</td></tr>
+      <tr><th>Principle</th><th>Requirement for these assignments</th></tr>
+      <tr><td>Learning test</td><td>What the student must do personally (measure, predict, taste, explain) is the skill itself, not busywork.</td></tr>
+      <tr><td>Forward test</td><td>Answers depend on the student's own home, so copying a friend's sheet does not make sense, and the class check exposes it.</td></tr>
+      <tr><td>Solver test</td><td>No single shared answer exists: everyone's measurements differ.</td></tr>
+      <tr><td>Agent test</td><td>Accept that AI can write the sheet. Put the check in class (the "presence" pattern), not in the website.</td></tr>
+      <tr><td>Faking test</td><td>Faking should take as much thinking as the lesson (e.g. faking the paper task means dividing decimals).</td></tr>
+      <tr><td>Oracle test</td><td>Not used for grading. Feedback hints only check whether numbers agree with each other, and never give the answer.</td></tr>
+      <tr><td>Explain-back (7th test)</td><td>Every task ends with teaching a family member and writing what they say back.</td></tr>
+      <tr><td>Patterns that last: identity, real-world data, interaction, presence</td><td>Own home and family (identity); predict-then-measure (real-world data); family taster and class comparison (interaction); the 2-minute class check (presence).</td></tr>
     </table></div>
   </section>
 
-  <section class="card">
-    <h2>Fixed after the red-team</h2>
+  <section class="card" id="s4">
+    <h2>4. Design framework</h2>
+    <div class="tw"><table>
+      <tr><th>Pattern</th><th>Supports</th><th>Why AI does not remove the value</th><th>Evidence of understanding</th><th>Limits</th></tr>
+      <tr><td>Predict, then observe</td><td>Confronting misconceptions</td><td>The surprise only happens to someone who predicted and then saw</td><td>Prediction vs result, and the explanation of the gap</td><td>A student can "predict" after looking it up</td></tr>
+      <tr><td>Household measurement</td><td>Units, estimation, measurement error</td><td>The numbers belong to one home</td><td>Numbers that agree with each other; a home-specific detail</td><td>Not every home has a tape; numbers can be invented</td></tr>
+      <tr><td>Repeat with one change</td><td>Fair tests, variables</td><td>Needs two real runs</td><td>Raw trials that vary a little; correct comparison</td><td>A formula can generate plausible data</td></tr>
+      <tr><td>Find the error in an AI explanation</td><td>Evaluating claims with evidence</td><td>Uses AI as the object of study</td><td>Which claims the experiment can and cannot test</td><td>Another AI can spot the errors too</td></tr>
+      <tr><td>Design under a constraint</td><td>Applying a rule to a new case</td><td>The student chooses the case (drink D)</td><td>A correct new design that is then tested</td><td>Easy cases give little challenge</td></tr>
+      <tr><td>Family as judge (blind taste)</td><td>Linking maths to experience</td><td>Another person's response</td><td>The taster's own words</td><td>Needs a willing family member</td></tr>
+      <tr><td>Teach it back</td><td>Explaining in your own words</td><td>Talking to someone at home</td><td>The family member's sentence</td><td>Can be invented; strongest when read aloud in class</td></tr>
+      <tr><td>Fresh case in class</td><td>Transfer</td><td>No phones, a new problem</td><td>Correct answer in 2 minutes</td><td>Needs 2 minutes of class time</td></tr>
+    </table></div>
+  </section>
+
+  <section class="card" id="s5">
+    <h2>5. Evaluation checklist</h2>
+    <p class="muted">Use it before publishing any task. <span class="tag m">MUST</span> = do not publish without it. <span class="tag d">GOOD</span> = improve if you can.</p>
+    <div class="tw"><table>
+      <tr><th>Criterion</th><th>Passes when…</th></tr>
+      <tr><td><span class="tag m">MUST</span>Curriculum fit</td><td>It names the NCERT chapter and activity, checked in the current PDF.</td></tr>
+      <tr><td><span class="tag m">MUST</span>One clear objective</td><td>One sentence says what the student will understand afterwards.</td></tr>
+      <tr><td><span class="tag m">MUST</span>Does it personally</td><td>At least one step only the student can do: measure, test, taste or observe at home.</td></tr>
+      <tr><td><span class="tag m">MUST</span>Still teaches with AI</td><td>If an AI writes the sheet, the in-class fresh-case check still shows whether the student learned it.</td></tr>
+      <tr><td><span class="tag m">MUST</span>Safe and private</td><td>No hot water, sharp tools or climbing without an adult. No names, photos or data collected online.</td></tr>
+      <tr><td><span class="tag m">MUST</span>Teacher load</td><td>At most 5 minutes per class: send a link, run a 2-minute check, sort a few notebooks with the rubric.</td></tr>
+      <tr><td><span class="tag m">MUST</span>Materials</td><td>Only things in a typical Indian home, with a substitute listed for anything uncommon.</td></tr>
+      <tr><td><span class="tag m">MUST</span>Works offline</td><td>A printable sheet exists; the activity needs no internet.</td></tr>
+      <tr><td><span class="tag d">GOOD</span>Age-appropriate</td><td>Instructions a Grade 6 student can read alone; hard words explained; under 30 minutes.</td></tr>
+      <tr><td><span class="tag d">GOOD</span>Collaboration helps</td><td>Working with a friend adds a comparison (different homes, different results) instead of a shortcut.</td></tr>
+      <tr><td><span class="tag d">GOOD</span>Faking still teaches</td><td>Inventing believable numbers needs the same reasoning as the lesson.</td></tr>
+      <tr><td><span class="tag d">GOOD</span>Feedback without the answer</td><td>Hints catch common mistakes (units, half-swings, pages vs sheets) but never give the result.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="card" id="s6">
+    <h2>6. Five assignments</h2>
+    <p class="muted">Full student instructions are on the <a href="./">student page</a>. Answer keys, rubrics, misconceptions and class checks are on the <a href="teacher.html">teacher page</a>.</p>
+    <div class="tw"><table>
+      <tr><th>Task</th><th>NCERT</th><th>Pattern</th><th>Materials</th><th>Main failure mode</th></tr>
+      <tr><td><a href="./#handspan">G6 Science · Handspans</a></td><td>Curiosity 6, Ch. 5, Activity 5.1</td><td>Household measurement; compare people</td><td>Table, ruler, an adult</td><td>Handspans not placed end to end</td></tr>
+      <tr><td><a href="./#pendulum">G7 Science · Pendulum</a></td><td>Curiosity 7, Ch. 8, Activity 8.2</td><td>Repeat with one change</td><td>Thread, small weight, watch</td><td>Counting half-swings</td></tr>
+      <tr><td><a href="./#salt">G8 Science · Fix the AI</a></td><td>Curiosity 8, Ch. 9, Activity 9.1</td><td>Find the error in an AI explanation</td><td>Glass, salt, spoon</td><td>Heaped vs level spoons; stopping too early</td></tr>
+      <tr><td><a href="./#paper">G7 Maths · Paper thickness</a></td><td>Ganita Prakash 7, Ch. 3</td><td>Estimate, measure, apply</td><td>200+ page book, mm ruler</td><td>Counting pages as sheets</td></tr>
+      <tr><td><a href="./#sweet">G8 Maths · Same sweetness</a></td><td>Ganita Prakash 8, Ch. 7, Example 2</td><td>Design under constraint; family judge</td><td>Cups, sugar (or turmeric for colour)</td><td>Adding instead of multiplying</td></tr>
+    </table></div>
+    <p class="ev" style="margin-top:8px">Teacher prep for each task: none. Each takes about 20–30 minutes at home. Grade 6 Maths has no task yet.</p>
+  </section>
+
+  <section class="card" id="s7">
+    <h2>7. Red-team report</h2>
+    <p class="muted">An AI agent was given only the student-facing text (not the answer keys) and tried seven failure scenarios on each task, 13 Oct 2026. Results are for the version <b>before</b> the revisions below. Was the learning objective undermined?</p>
+    <div class="tw"><table>
+      <tr><th></th><th>AI does it all</th><th>Instructions only</th><th>Split the work</th><th>Fake numbers</th><th>Shallow answer</th><th>Offline</th><th>No special materials</th></tr>
+      <tr><td>Handspans</td><td class="n">Yes</td><td class="n">Yes</td><td class="p">Partly</td><td class="p">Partly</td><td class="p">Partly</td><td class="y">No</td><td class="p">Partly</td></tr>
+      <tr><td>Pendulum</td><td class="n">Yes</td><td class="n">Yes</td><td class="p">Partly</td><td class="n">Yes</td><td class="p">Partly</td><td class="y">No</td><td class="p">Partly</td></tr>
+      <tr><td>Fix the AI</td><td class="n">Yes</td><td class="n">Yes</td><td class="p">Partly</td><td class="n">Yes</td><td class="p">Partly</td><td class="y">No</td><td class="y">No</td></tr>
+      <tr><td>Paper</td><td class="n">Yes</td><td class="n">Yes</td><td class="p">Partly</td><td class="p">Partly</td><td class="p">Partly</td><td class="y">No</td><td class="p">Partly</td></tr>
+      <tr><td>Sweetness</td><td class="n">Yes</td><td class="n">Yes</td><td class="p">Partly</td><td class="n">Yes</td><td class="p">Partly</td><td class="y">No</td><td class="y">No</td></tr>
+    </table></div>
+    <h3>What we changed after it</h3>
     <ul class="plain">
-      <li>A PIN per roll number, so no one can lock a wrong prediction or use up tries for a classmate. After 10 wrong PINs the roll locks and the teacher can reset it.</li>
-      <li>Near-copies (all numbers within 2%) are flagged, not only exact copies.</li>
-      <li>Rolls that finish within 3 minutes of predicting are flagged.</li>
-      <li>Typing mistakes (out-of-range numbers) no longer use up a try.</li>
-      <li>The hand-area task now checks the textbook's part-square rule.</li>
-      <li>The bottle task requires the bottle on a stool, so the result matches the lesson.</li>
-      <li>Class results show only one summary number per student, not everyone's raw measurements.</li>
-      <li>Class creation is rate-limited, which makes it harder to use the server as a free answer checker.</li>
+      <li><b>Science error fixed:</b> AI sentence 4 originally said hot and cold water dissolve the same amount of salt. That is nearly true for common salt, so a student testing it would "confirm" the AI. It now says temperature never matters for any solid, and the teacher notes suggest testing with sugar, with an adult handling hot water.</li>
+      <li><b>Feedback bugs fixed:</b> a wrong "measure in mm, not cm" hint; a pages-vs-sheets check that missed the mistake; a pendulum hint that gave away the answer; salt feedback that declared "saturated" for any number.</li>
+      <li><b>Personal detail added:</b> what was measured and what was on it; the book's name and last page; the taster's own words; what the leftover salt did when more water was added.</li>
+      <li><b>Real data asked for:</b> two raw timings per pendulum length, not just an average.</li>
+      <li><b>Pendulum made a direct test of the prediction:</b> 25 cm → 100 cm (4×), matching the "4 times longer" prediction.</li>
+      <li><b>A student-designed case:</b> drink D, so there is no single answer to copy.</li>
+      <li><b>"Working with a friend" rule on each task:</b> each student does it at home, then you compare results.</li>
+      <li><b>Access and safety:</b> a 15 cm ruler is fine; use a book with 200+ pages; an adult ties the thread; colour instead of taste if sugar is not allowed.</li>
+    </ul>
+    <h3>What remains</h3>
+    <ul class="plain">
+      <li>An AI can still invent believable numbers and a family member's sentence. The website cannot tell; the 2-minute class check and reading sentences aloud are the defence.</li>
+      <li>The red-team judged the revisions from the text; they have not been re-tested by a second AI pass or by real students.</li>
+      <li>Where faking still teaches: partly in paper (dividing decimals) and sweetness (scaling); barely in pendulum and salt, where faking needs facts rather than reasoning.</li>
     </ul>
   </section>
 
-  <section class="card">
-    <h2>Known limits</h2>
-    <ul class="plain">
-      <li>An AI can produce realistic numbers for every task. The server cannot tell these from real measurements.</li>
-      <li>A script that waits a few minutes and varies its numbers by 3% or more is not flagged.</li>
-      <li>A student could claim a classmate's unused roll number first. The teacher can reset it.</li>
-      <li>The tolerances can still be mapped with enough effort (the red-team found the pendulum window in 13 submissions before the class limit was added).</li>
-      <li>Nothing has been tried with real students yet. The first classroom trial is the real test.</li>
-    </ul>
+  <section class="card" id="s8">
+    <h2>8. Minimal product</h2>
+    <div class="tw"><table>
+      <tr><th>Built now (essential)</th><th>Later, if a trial shows it is needed</th><th>Left out on purpose</th></tr>
+      <tr><td>Assignment pages that open directly, no login<br>Prediction locked before the activity<br>Structured answers saved on the student's own device<br>Feedback hints in the browser (no server)<br>Answer sheet to print or copy into the notebook<br>Printable paper version of each task<br>Teacher page: link, answer key, rubric, misconceptions, class check</td><td>AI feedback on written explanations (see below)<br>Class view of pooled results (e.g. everyone's handspans)<br>Hindi and regional-language versions<br>More tasks (Grade 6 Maths first)</td><td>Accounts, class codes, PINs<br>Online grading and dashboards<br>Analytics, leaderboards<br>Tracking students</td></tr>
+    </table></div>
+    <p><b>If AI feedback is added later:</b> give feedback only on the "Explain" answers, with a tutor-style prompt that asks questions and does not give answers (the setup that avoided harm in <a href="https://doi.org/10.1073/pnas.2422633122">Bastani et al.</a>). Limit cost per answer sheet rather than per student: one feedback request per question, plus one more after a revision, cached by the exact text. Use a small model and a short prompt. Students can still revise as much as they like without new requests.</p>
+    <p class="ev">An earlier prototype had class codes, PINs and server grading. It was removed because the red-team showed server checks cannot stop AI-made numbers, and it added setup for teachers.</p>
   </section>
-<p class="muted" style="margin-top:28px"><a href="index.html">Student page</a> · <a href="teacher.html">Teacher page</a></p>
+
+  <section class="card" id="s9">
+    <h2>9. Validation plan</h2>
+    <p><b>Pilot:</b> 2–3 teachers, one class each, one task per week for 3 weeks. Before starting, each teacher picks the task. No results are claimed until this is done.</p>
+    <div class="tw"><table>
+      <tr><th>Question</th><th>Measure</th><th>Completion or learning?</th></tr>
+      <tr><td>Did they learn it?</td><td>Share of students answering the 2-minute fresh-case check correctly, compared with a similar class given the usual worksheet</td><td>Learning</td></tr>
+      <tr><td>Can they explain it?</td><td>Rubric level (Got it / Partly / Not yet) on 10 random notebooks per class</td><td>Learning</td></tr>
+      <tr><td>Does AI use help or hurt?</td><td>Anonymous one-question survey ("Did you use AI? For what?") crossed with the class-check result</td><td>Learning</td></tr>
+      <tr><td>Does collaboration help?</td><td>Teacher notes on whether pairs compared different results or copied</td><td>Learning</td></tr>
+      <tr><td>Teacher burden</td><td>Minutes of prep and checking, logged by the teacher</td><td>Usability</td></tr>
+      <tr><td>Can students do it?</td><td>Share who completed it; what stopped the others (materials, device, time)</td><td>Completion</td></tr>
+      <tr><td>Is it clear?</td><td>Questions students asked; the steps they got wrong</td><td>Usability</td></tr>
+    </table></div>
+  </section>
+
+  <section class="card" id="s10">
+    <h2>10. Next steps</h2>
+    <ol>
+      <li><b>First:</b> Anand or a teacher reviews the five tasks for wording and grade fit. Then run the pilot above with one task (handspans or pendulum are the easiest to start with).</li>
+      <li><b>Then:</b> fix what the pilot shows; add a Grade 6 Maths task; translate into Hindi.</li>
+      <li><b>Can wait:</b> AI feedback on explanations; pooled class results.</li>
+      <li><b>Exclude from the first prototype:</b> logins, dashboards, online grading, anything that tracks students.</li>
+    </ol>
+  </section>
+  <p class="muted" style="margin-top:24px"><a href="./">Student page</a> · <a href="teacher.html">Teacher page</a> · <a href="https://github.com/SujalPradhan/CBSE-Homework">Source</a></p>
 </main>
 </body>
 </html>
