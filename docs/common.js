@@ -1,6 +1,6 @@
 // Shared helpers for the student and teacher pages.
 const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
-const API = new URLSearchParams(location.search).get('api') || (LOCAL ? 'http://localhost:8787' : 'https://cbse-homework.WORKERS_SUBDOMAIN.workers.dev');
+const API = new URLSearchParams(location.search).get('api') || (LOCAL ? 'http://localhost:8787' : 'https://cbse-homework.cbse-homework-worker.workers.dev');
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 async function api(path, body) {
