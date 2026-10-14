@@ -37,7 +37,7 @@ let refSection = null;
 document.getElementById('out').innerHTML = `
   <h1>From your textbook</h1>
   <p class="muted">${esc(A.book.title)} · for the task “${esc(A.title)}”</p>
-  ${Q ? `<div class="ask"><b>${esc(Q.phase)}: ${esc(Q.label)}</b>${esc(Q.why || '')}</div>` : ''}
+  ${Q ? `<div class="ask"><b>${esc(fill(Q.label, CASE(47)))}</b></div>` : ''}
   ${A.book.sections.map(s => {
     const hit = ref && s.paras.some(p => p.includes(ref));
     if (hit) refSection = s;

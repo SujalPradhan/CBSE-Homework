@@ -4,33 +4,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Measure It: Teachers</title>
-<meta name="description" content="Teacher notes for five hands-on homework tasks: links to share, answer keys, rubrics, misconceptions and 2-minute class checks.">
+<meta name="description" content="Links, expected results and a check page for the Measure It homework tasks.">
 <link rel="stylesheet" href="style.css">
 <style>
-details.card>summary{cursor:pointer;list-style:none}
-details.card>summary::-webkit-details-marker{display:none}
-details.card>summary h2{display:inline}
-details.card[open]>summary{margin-bottom:8px}
-.lbl{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin:16px 0 4px}
-.link{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.link code{background:var(--chip);padding:8px 10px;border-radius:8px;font-size:14px;word-break:break-all;flex:1 1 240px}
-td:first-child{white-space:nowrap;font-weight:700}
+details.t{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:10px}
+details.t summary{cursor:pointer;font-weight:700;font-size:17px;list-style:none}
+details.t summary::-webkit-details-marker{display:none}
+details.t[open] summary{margin-bottom:10px}
+.lbl{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin:14px 0 4px}
+.links{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0}
+.links a,.links button{font-size:15px}
+ul.s{margin:4px 0;padding-left:20px}
+ul.s li{margin:2px 0}
 </style>
 </head>
 <body>
-<main>
-  <h1 class="no-print">For teachers</h1>
-  <p class="muted no-print">How to use: send the link for a task. Students do it at home and get a result card with a code. You only look at the card. There is nothing to mark.</p>
-  <div class="card no-print">
-    <p><b>What the card is:</b> a signed result (Got it / Partly / Not yet) with a code. Open <a href="card.html">the card page</a> and paste a code to check that it is genuine. A student cannot change the level, because the code is signed.</p>
-    <p><b>What “verified” means:</b> (1) the student’s measurements agree with each other, and (2) their written answers met this task’s rubric, as judged by an AI checker. It does <b>not</b> prove the activity was done: an AI can write convincing answers and invent numbers. Use the card as a first filter.</p>
-    <p><b>If you want certainty:</b> two optional things take about 2 minutes. Ask the class-check question (below) with phones away, and ask two students to say what question their family member asked them. Identical codes from different students on the same day mean identical answers.</p>
-    <p style="margin:0"><b>Privacy:</b> students’ answers are sent to the checker and are not stored. The card shows no name.</p>
-  </div>
+<div class="app">
+  <div class="topbar no-print"><a class="brand" href="./">Measure It</a><span class="sp"></span><a class="muted2" href="card.html">Check a code</a></div>
+  <h1>For teachers</h1>
+  <ul class="s">
+    <li>Send a task link. Students do it at home.</li>
+    <li>They get a code. <a href="card.html">Check it here.</a> Nothing to mark.</li>
+    <li>A code means their numbers agree and their sentence makes sense. It cannot prove the activity was done.</li>
+  </ul>
   <div id="list"></div>
-  <p class="no-print" style="margin-top:16px"><button class="ghost" onclick="document.querySelectorAll('details').forEach(d=>d.open=true);print()">Print all teacher notes</button></p>
-  <p class="muted no-print" style="margin-top:20px"><a href="./">Student page</a> · <a href="card.html">Check a code</a> · <a href="checklist.html">How these were designed and tested</a></p>
-</main>
+  <p class="muted2" style="margin-top:20px"><a href="checklist.html">How this was designed and tested</a></p>
+</div>
 <script src="assignments.js"></script>
 <script src="teacher-notes.js"></script>
 <script>
@@ -38,20 +37,14 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 const base = new URL('./', location.href).href;
 document.getElementById('list').innerHTML = ASSIGNMENTS.map((a, i) => {
   const t = TEACHER[a.id], link = base + '#' + a.id;
-  return `<details class="card" ${i === 0 ? 'open' : ''}><summary><span class="chip">Grade ${a.grade} · ${a.subject}</span><span class="chip">${a.minutes} min</span><br><h2>${esc(a.title)}</h2></summary>
-    <p><b>Learning objective:</b> ${esc(a.objective)}</p>
-    <p><b>Why it matters:</b> ${esc(a.why)}</p>
-    <p class="muted"><a href="book.html?a=${a.id}" target="_blank">Textbook passages behind this task ↗</a></p>
-    <p class="muted">${esc(a.chapter)} · ${esc(a.pattern)} · Prep: ${esc(t.prep)}</p>
-    <div class="lbl">Send this to students</div>
-    <div class="link no-print"><code>${esc(link)}</code><button class="ghost" data-copy="${esc(link)}">Copy link</button><a href="./?print&a=${a.id}" target="_blank">Printable sheet</a></div>
-    <div class="lbl">Expected results</div><p>${esc(t.answers)}</p>
-    <div class="lbl">Rubric</div>
-    <div class="tw"><table>${t.rubric.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}</table></div>
-    <div class="lbl">Watch for these misconceptions</div><ul class="plain">${t.misconceptions.map(m => `<li>${esc(m)}</li>`).join('')}</ul>
-    <div class="lbl">2-minute class check (next day, no phones)</div><ol>${t.classCheck.map(q => `<li>${esc(q)}</li>`).join('')}</ol>
-    <div class="lbl">If students use AI</div><p>${esc(t.ai)}</p>
-    <div class="lbl">Using it in class</div><p>${esc(t.collab)}</p>
+  return `<details class="t" ${i === 0 ? 'open' : ''}><summary>Grade ${a.grade} ${a.subject}: ${esc(a.title)} <span class="muted2">· ${a.minutes} min</span></summary>
+    <div class="links no-print"><button class="btn2 ghost" data-copy="${esc(link)}">Copy link</button>
+      <a class="btn2 ghost" style="text-decoration:none;display:inline-flex;align-items:center" href="./?print&a=${a.id}" target="_blank">Printable sheet</a>
+      <a class="btn2 ghost" style="text-decoration:none;display:inline-flex;align-items:center" href="book.html?a=${a.id}" target="_blank">Textbook page</a></div>
+    <div class="lbl">Expect</div><p>${esc(t.answers)}</p>
+    <div class="lbl">Levels</div><ul class="s">${t.rubric.map(([k, v]) => `<li><b>${esc(k)}:</b> ${esc(v)}</li>`).join('')}</ul>
+    <div class="lbl">Common mistakes</div><p>${t.misconceptions.map(esc).join(' · ')}</p>
+    <div class="lbl">Optional 2-minute check</div><ul class="s">${t.classCheck.map(q => `<li>${esc(q)}</li>`).join('')}</ul>
   </details>`;
 }).join('');
 document.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => navigator.clipboard.writeText(b.dataset.copy).then(() => b.textContent = 'Copied ✓'));

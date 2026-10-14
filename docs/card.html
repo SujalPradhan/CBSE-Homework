@@ -16,8 +16,8 @@
 <body>
 <main>
   <h1 class="no-print">Result card</h1>
-  <p class="muted no-print">Students: this is the card for your teacher. Teachers: paste a code below to check it is genuine. No login.</p>
-  <form id="f" class="row no-print" style="margin:12px 0"><div><label for="code">Code</label><input id="code" autocomplete="off" placeholder="e.g. PEN-GC-261014-GPGP-4KQ7-ABCD2345"></div><div style="flex:0 0 auto"><button type="submit">Check code</button></div></form>
+  <p class="muted no-print">Paste a code to check it. No login.</p>
+  <form id="f" class="row no-print" style="margin:12px 0"><div><label for="code">Code</label><input id="code" autocomplete="off" placeholder="PEN-GC-261014-47-GGGG-4KQ7-ABCD2345"></div><div style="flex:0 0 auto"><button type="submit">Check code</button></div></form>
   <div id="out"></div>
   <p class="muted no-print" style="margin-top:20px"><a href="./">Student page</a> · <a href="teacher.html">Teacher page</a></p>
 </main>
@@ -33,13 +33,12 @@ async function show(code) {
     const r = await (await fetch(API + '/api/check?code=' + encodeURIComponent(code))).json();
     if (!r.ok) { $('#out').innerHTML = `<div class="msg warn"><b>Not a valid code.</b> ${esc(r.error || '')}</div>`; return; }
     $('#out').innerHTML = `<section class="card">
-      <p class="muted">${esc(r.title)} · Grade ${r.grade} ${esc(r.subject)} · ${esc(r.date)}</p>
+      <p class="muted">${esc(r.title)} · Grade ${r.grade} ${esc(r.subject)} · set ${r.set} · ${esc(r.date)}</p>
       <p class="big"><span class="lv ${r.level}">${esc(LEVEL_TEXT[r.level])}</span></p>
-      <p>${r.numbers === 'consistent' ? 'The measurements agree with each other.' : '<b>The measurements did not fully agree with each other.</b>'}</p>
       <div class="tw"><table>${r.questions.map(q => `<tr><td>${esc(q.label)}</td><td><span class="lv ${q.level}">${esc(LEVEL_TEXT[q.level])}</span></td></tr>`).join('')}</table></div>
       <p style="margin-top:12px">Code: <span class="code">${esc(code.toUpperCase())}</span></p>
       <p class="muted">Student name (write by hand): ______________________ &nbsp; Class: ______</p>
-      <p class="muted">This card says the written answers met the task’s rubric and the numbers were consistent. It does not prove the activity was done. The code is signed, so the level cannot be changed.</p>
+      <p class="muted">Signed result: the level cannot be changed. It shows the answers held together, not that the activity was done.</p>
       <p class="no-print"><button onclick="print()">Print</button></p></section>`;
   } catch (e) { $('#out').innerHTML = '<div class="msg warn">Could not reach the checker. Try again later.</div>'; }
 }
