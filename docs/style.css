@@ -130,3 +130,5 @@ details.ans summary{cursor:pointer;font-weight:600}
 @media print{.bar,.topbar,.no-print{display:none!important} .app{padding:0}}
 .app main{padding:0;margin:0;max-width:none}
 #view:focus{outline:none}
+
+.qn{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin:18px 0 -4px}

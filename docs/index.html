@@ -21,8 +21,8 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 const load = id => { try { return JSON.parse(localStorage.getItem('mi2:' + id)) || {}; } catch { return {}; } };
 const save = (id, st) => { try { localStorage.setItem('mi2:' + id, JSON.stringify(st)); } catch {} };
 const view = $('#view'), bar = $('#bar');
-// One question per screen, in order: a screen that asked several things becomes several screens.
-const linear = a => ({ ...a, screens: a.screens.flatMap(sc => sc.q.map(id => ({ ...sc, q: [id] }))) });
+// All questions on one page, top to bottom, in order. Nothing is hidden until an earlier one is answered.
+const linear = a => ({ ...a, screens: [{ id: 'all', groups: a.screens, q: a.screens.flatMap(sc => sc.q) }] });
 let A = null, C = null, S = null;   // assignment, case, state
 
 function route() {
@@ -44,7 +44,7 @@ function list() {
   view.innerHTML = `<div class="hero"><h1>Pick a task</h1><p>Hands-on maths and science from your NCERT book.</p></div>
     <div class="grid">${ASSIGNMENTS.map(a => {
       const st = load(a.id), card = st.card, total = linear(a).screens.length + 2, at = Math.min(st.step || 0, total - 1);
-      const s = card ? `<span class="status ${card.level}">${esc(LEVEL_TEXT[card.level])}</span>` : st.set && at > 0 ? `<span class="status">Step ${at} of ${total - 2}</span>` : '';
+      const s = card ? `<span class="status ${card.level}">${esc(LEVEL_TEXT[card.level])}</span>` : st.set && at > 0 ? '<span class="status">In progress</span>' : '';
       return `<a class="tcard" href="#${a.id}"><span class="chip2">Grade ${a.grade} · ${a.subject}</span><h3>${esc(a.title)}</h3><div class="meta">${a.minutes} min ${s ? '· ' : ''}${s}</div></a>`;
     }).join('')}</div>`;
   scrollTo(0, 0);
@@ -57,7 +57,7 @@ function task() {
   const n = S.step, total = stepsTotal();
   const pct = Math.round((Math.min(n, total - 1) / (total - 1)) * 100);
   let h = `<a class="back no-print" href="./">← All tasks</a>
-    <div class="stepno">${n === 0 ? 'Start' : n === total - 1 ? 'Check' : `Step ${n} of ${total - 2}`}</div>
+    <div class="stepno">${n === 0 ? 'Start' : n === total - 1 ? 'Check' : 'Your answers'}</div>
     <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>`;
   if (n === 0) h += startScreen();
   else if (n < total - 1) h += questionScreen(A.screens[n - 1]);
@@ -67,7 +67,7 @@ function task() {
   bar.classList.toggle('hide', n === total - 1 && !!S.card);
   $('#back').classList.toggle('hide', n === 0);
   $('#next').disabled = false;
-  $('#next').textContent = n === 0 ? 'Start' : n === total - 1 ? 'Check my answers' : (A.screens[n - 1].lock && !S.locked[A.screens[n - 1].q[0]] ? 'Lock my guess' : 'Next');
+  $('#next').textContent = n === 0 ? 'Start' : n === total - 1 ? 'Check my answers' : 'Done, review';
 }
 
 function startScreen() {
@@ -82,12 +82,10 @@ function startScreen() {
 }
 
 function questionScreen(sc) {
-  const qs = sc.q.map(id => A.questions.find(q => q.id === id));
-  const locked = qs.every(q => S.locked[q.id]);
-  return `<div class="screen"><h2>${esc(fill(sc.title, C))}</h2>
-    ${sc.do ? `<div class="do">${esc(fill(sc.do, C))}</div>` : ''}
-    ${qs.map(q => field(q, locked)).join('')}
-    ${locked && sc.lock ? '<div class="lockrow">🔒 Your guess is locked</div>' : ''}
+  let n = 0;
+  return `<div class="screen">${sc.groups.map(g => `<h2>${esc(fill(g.title, C))}</h2>
+    ${g.do ? `<div class="do">${esc(fill(g.do, C))}</div>` : ''}
+    ${g.q.map(id => { const q = A.questions.find(x => x.id === id); return `<div class="qn">Question ${++n}</div>` + field(q, false); }).join('')}`).join('')}
     <div id="hints" aria-live="polite"></div></div>`;
 }
 
