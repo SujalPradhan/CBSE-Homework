@@ -21,13 +21,15 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 const load = id => { try { return JSON.parse(localStorage.getItem('mi2:' + id)) || {}; } catch { return {}; } };
 const save = (id, st) => { try { localStorage.setItem('mi2:' + id, JSON.stringify(st)); } catch {} };
 const view = $('#view'), bar = $('#bar');
+// One question per screen, in order: a screen that asked several things becomes several screens.
+const linear = a => ({ ...a, screens: a.screens.flatMap(sc => sc.q.map(id => ({ ...sc, q: [id] }))) });
 let A = null, C = null, S = null;   // assignment, case, state
 
 function route() {
   const qs = new URLSearchParams(location.search), id = location.hash.slice(1) || qs.get('a'), a = ASSIGNMENTS.find(x => x.id === id);
   if (qs.has('print') && a) return printSheet(a);
   if (!a) return list();
-  A = a; S = load(a.id);
+  A = linear(a); S = load(a.id);
   if (!S.set) { S.set = 10 + Math.floor(Math.random() * 90); S.step = 0; S.ans = {}; S.locked = {}; save(a.id, S); }
   S.ans = S.ans || {}; S.locked = S.locked || {}; S.step = S.step || 0;
   C = CASE(S.set);
@@ -41,7 +43,7 @@ function list() {
   A = null; bar.classList.add('hide'); document.title = 'Measure It Homework';
   view.innerHTML = `<div class="hero"><h1>Pick a task</h1><p>Hands-on maths and science from your NCERT book.</p></div>
     <div class="grid">${ASSIGNMENTS.map(a => {
-      const st = load(a.id), card = st.card, total = a.screens.length + 2, at = Math.min(st.step || 0, total - 1);
+      const st = load(a.id), card = st.card, total = linear(a).screens.length + 2, at = Math.min(st.step || 0, total - 1);
       const s = card ? `<span class="status ${card.level}">${esc(LEVEL_TEXT[card.level])}</span>` : st.set && at > 0 ? `<span class="status">Step ${at} of ${total - 2}</span>` : '';
       return `<a class="tcard" href="#${a.id}"><span class="chip2">Grade ${a.grade} · ${a.subject}</span><h3>${esc(a.title)}</h3><div class="meta">${a.minutes} min ${s ? '· ' : ''}${s}</div></a>`;
     }).join('')}</div>`;
