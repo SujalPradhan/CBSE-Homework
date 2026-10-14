@@ -2,9 +2,9 @@
 const TEACHER = {
   handspan: {
     prep: 'None. Students need a ruler or tape at home.',
-    answers: 'Handspans for 11–13-year-olds are usually 14–19 cm; adults 18–23 cm. The adult needs fewer handspans. Count × handspan should be within about 15% of the ruler length, for both people. The gap comes from hands not placed exactly end to end and rounding to halves.',
+    answers: 'Handspans for 11–13-year-olds are usually 14–19 cm; adults 18–23 cm. The adult needs fewer handspans. Count × handspan should be within about 15% of the ruler length, for both people. The gap comes from hands not placed exactly end to end and rounding to halves. If the adult used the student’s ruler they would get the same cm number; that is the point of a standard unit. Teach-back: the adult’s question and the student’s answer should use “units differ between people; cm is the same for everyone”.',
     rubric: [
-      ['Got it', 'Says the bigger hand gives the smaller count AND that a standard unit (cm) gives everyone the same number. Uses their own numbers.'],
+      ['Got it', 'Uses their two handspan sizes to explain why counts differ AND says an adult with the student’s ruler would get the same cm number (a standard unit). Cloth question converts both handspans to cm.'],
       ['Partly', 'Notices the counts differ but explains it only as "hands are different" without linking size to count.'],
       ['Not yet', 'Thinks the counts should be the same, or numbers do not agree (count × handspan far from the table length).'],
     ],
@@ -15,24 +15,24 @@ const TEACHER = {
   },
   pendulum: {
     prep: 'None. Students need thread, a small weight and a watch.',
-    answers: '25 cm: about 10 s for 10 oscillations (1.0 s each). 100 cm: about 20 s (2.0 s each). So 4× the length gives 2× the time, not 4×. A heavier bob makes almost no difference. A slow clock needs a shorter pendulum. Real hand timings vary by a few tenths of a second between tries; identical tries are a reason to ask questions.',
+    answers: '25 cm: about 10 s for 10 oscillations (1.0 s each). 100 cm: about 20 s (2.0 s each). So 4× the length gives 2× the time, not 4×. A heavier bob makes almost no difference. A slow clock (shows 11:55 at 12:00) needs a shorter pendulum. At 50 cm expect about 14 s, not 15 s: halfway in length is not halfway in time. Real hand timings vary by a few tenths of a second between tries; identical tries are a reason to ask questions.',
     rubric: [
-      ['Got it', 'Longer → slower, with their own two tries per length; says 4× length gave about 2× time; mass does not matter; correct clock answer; describes a real timing difficulty.'],
+      ['Got it', 'Longer → slower, with their own two tries per length; says 4× length gave about 2× time and 50 cm was NOT exactly halfway in time; mass does not matter; correct clock answer using their numbers; describes a real timing difficulty.'],
       ['Partly', 'Longer → slower, but says time grows in the same proportion as length, or gives no numbers.'],
       ['Not yet', 'Says longer swings faster, or that the heavier bob changes the time, or numbers suggest counting half-swings.'],
     ],
-    misconceptions: ['A heavier bob swings faster.', 'Doubling the length doubles the time.', 'One swing to one side is one oscillation.'],
+    misconceptions: ['A heavier bob swings faster.', 'Doubling the length doubles the time.', 'Halfway in length means halfway in time.', 'One swing to one side is one oscillation.'],
     classCheck: ['A pendulum takes 15 s for 10 oscillations. What is its time period?', 'Two pendulums have the same length; one bob is heavier. Which swings faster?'],
     ai: 'An AI knows the formula and can invent realistic times. It cannot hang the thread. The clock question and the in-class check test whether the idea stuck.',
     collab: 'Students with different lengths pool their results in class: plot length vs time on the board and see the curve.',
   },
   salt: {
     prep: 'None. Salt and a glass at home.',
-    answers: 'Half a glass (~100 mL) dissolves roughly 5–8 level teaspoons of salt, depending on spoon size. Sentence 1 is right. Sentences 2 and 3 are wrong and the experiment shows it (it stops dissolving; the water tastes salty). Sentence 4 is wrong in general (sugar and baking soda dissolve much more in hot water; Activity 9.2 is a teacher demonstration) but this experiment does not change temperature, so it cannot test it. Note for teachers: common salt itself barely changes with temperature (about 36 g per 100 mL at 20 °C, 39 g at 100 °C), so a hot-water test should use sugar, with an adult handling hot water. Adding 2 spoons of water makes some of the leftover salt dissolve.',
+    answers: 'Half a glass (~100 mL) dissolves roughly 5–8 level teaspoons of salt, depending on spoon size. Sentence 1 is not contradicted by the experiment (it is a particle-picture claim the experiment cannot confirm). Sentences 2 and 3 are wrong and the experiment shows it (it stops dissolving; the water tastes salty). Sentence 4 is wrong in general (sugar and baking soda dissolve much more in hot water; Activity 9.2 is a teacher demonstration) but this experiment does not change temperature, so it cannot test it. Note for teachers: common salt itself barely changes with temperature (about 36 g per 100 mL at 20 °C, 39 g at 100 °C), so a hot-water test should use sugar, with an adult handling hot water. Adding 2 spoons of water makes some of the leftover salt dissolve.',
     rubric: [
-      ['Got it', 'Ticks 2 and 3 with evidence (stopped dissolving; tasted salty; more water dissolved more salt). Says sentence 4 needs a different experiment and describes one. Uses "saturated".'],
-      ['Partly', 'Finds one wrong sentence with evidence, or ticks 4 without saying it was not tested.'],
-      ['Not yet', 'Agrees the salt is "gone", or ticks sentence 1 as wrong.'],
+      ['Got it', 'Sorts the sentences: 2 and 3 Disagree with evidence (stopped dissolving; tasted salty); 1 is not contradicted; 4 Not tested, and designs a fair sugar test (same water amount and spoon, change only temperature). Compares the guess about added water with the result. Uses "saturated".'],
+      ['Partly', 'Finds one wrong sentence with evidence, or marks 4 as Disagrees without noting that temperature was not changed.'],
+      ['Not yet', 'Agrees the salt is "gone", or says sentence 1 is wrong without evidence.'],
     ],
     misconceptions: ['Dissolved means disappeared.', 'Stirring longer lets water dissolve any amount.', 'Every claim can be checked with one experiment.'],
     classCheck: ['Which is more concentrated: 2 spoons of salt in 100 mL of water, or 4 spoons in 50 mL? (from the textbook)', 'Your friend says an AI told them sugar does not dissolve in hot water. How would you check?'],
@@ -41,9 +41,9 @@ const TEACHER = {
   },
   paper: {
     prep: 'None.',
-    answers: 'Notebook and textbook paper is usually 0.07–0.12 mm per sheet. 50 sheets ≈ 4–6 mm; 100 sheets ≈ 8–12 mm. The bigger stack is better because the ruler error (±0.5 mm) is shared among more sheets. The two answers differ because of ruler error and how tightly each stack was squeezed. A 300-page book has 150 sheets.',
+    answers: 'Notebook and textbook paper is usually 0.07–0.12 mm per sheet. 50 sheets ≈ 4–6 mm; 100 sheets ≈ 8–12 mm. The bigger stack is better because the ruler error (±0.5 mm) is shared among more sheets. The two answers differ because of ruler error and how tightly each stack was squeezed. With each stack 0.5 mm too tall, the 50-sheet answer moves by 0.010 mm and the 100-sheet answer by 0.005 mm. A 300-page book has 150 sheets; the last page number can be higher than the page count because front pages are unnumbered.',
     rubric: [
-      ['Got it', 'Correct divisions to thousandths; says the bigger stack is better because the same ruler error is spread over more sheets; book check uses sheets = pages ÷ 2.'],
+      ['Got it', 'Correct divisions to thousandths; recalculates with +0.5 mm and sees the 50-sheet answer moves about twice as much, so trusts the bigger stack; book check estimates sheets first, then pages = sheets × 2.'],
       ['Partly', 'Correct divisions but vague about why the bigger stack is better, or forgets pages ÷ 2 in the book check.'],
       ['Not yet', 'Division or decimal place errors (e.g. 0.85 instead of 0.085), or counts pages as sheets.'],
     ],
@@ -54,11 +54,11 @@ const TEACHER = {
   },
   sweet: {
     prep: 'None. Remind students to ask before using sugar.',
-    answers: 'B = 2 × A spoons (1 : a :: 2 : 2a). A and B should taste the same; C is less sweet (half the sugar per cup). Drink D: spoons = a × cups. With 5 spoons: 5 ÷ a cups (2½ cups if a = 2).',
+    answers: 'B = 2 × A spoons (1 : a :: 2 : 2a). A and B should taste the same. C (the cousin’s rule, a + 1 spoons for 2 cups) is less sweet for a > 1, because a + 1 is less than 2a; it needs a − 1 more spoons to match A. If a = 1 the rule coincidentally works, which is worth discussing. Drink D: spoons = a × cups. With 5 spoons: 5 ÷ a cups (2½ cups if a = 2).',
     rubric: [
-      ['Got it', 'Correct B, D and challenge; shows A and B are in the same ratio; explains C has half the sugar per cup; reports the taster’s own words.'],
+      ['Got it', 'Correct B, D and challenge; shows A and B are in the same ratio; explains that adding one spoon is not the same factor as doubling the water, and fixes C with the right number of extra spoons; reports the taster’s own words.'],
       ['Partly', 'Correct B but stuck on the 5-spoon challenge (non-whole answer), or explains C only by taste without ratios.'],
-      ['Not yet', 'Adds instead of multiplies (e.g. B = a + 1), or thinks C should taste the same.'],
+      ['Not yet', 'Adds instead of multiplies (e.g. B = a + 1), or thinks the cousin’s rule keeps the sweetness.'],
     ],
     misconceptions: ['Adding the same amount keeps a ratio the same.', 'Answers to ratio problems must be whole numbers.', 'Same sugar means same sweetness.'],
     classCheck: ['Kesang made 6 glasses with 10 spoons. How many spoons for 24 glasses?', 'A recipe uses 3 cups of rice to 5 cups of water. You have 4 cups of rice. How much water?'],

@@ -23,15 +23,23 @@ ol.toc{columns:2;font-size:15px}
   <h1>AI-resilient homework for CBSE Grades 6–8</h1>
   <p class="muted">Design notes for Anand S · 13 Oct 2026 · <a href="./">Student page</a> · <a href="teacher.html">Teacher page</a></p>
   <ol class="toc">
-    <li><a href="#s1">Executive summary</a></li><li><a href="#s2">Research findings</a></li><li><a href="#s3">Principles → requirements</a></li>
+    <li><a href="#feedback">Update: Anand’s feedback</a></li><li><a href="#s1">Executive summary</a></li><li><a href="#s2">Research findings</a></li><li><a href="#s3">Principles → requirements</a></li>
     <li><a href="#s4">Design framework</a></li><li><a href="#s5">Evaluation checklist</a></li><li><a href="#s6">Five assignments</a></li>
     <li><a href="#s7">Red-team report</a></li><li><a href="#s8">Minimal product</a></li><li><a href="#s9">Validation plan</a></li><li><a href="#s10">Next steps</a></li>
   </ol>
 
+  <section class="card" id="feedback">
+    <h2>Update 14 Oct 2026: feedback from Anand</h2>
+    <p><b>He said:</b> the practical tasks are fine, but the set must be accessible <b>online</b>, and the teacher "should not have any additional load": there should be "some system online to verify".</p>
+    <p><b>What changed:</b> an online checker now reads a student's answers and returns a signed <b>result card</b> (Got it / Partly / Not yet). The teacher opens the card or pastes its code on the <a href="card.html">card page</a> and does not mark anything. There is still no login, no class list and no stored student data.</p>
+    <p><b>What the card proves, and what it does not:</b> it shows the numbers agree with each other and the written answers met the task's rubric. It cannot show the student measured anything. The red-team below found that an AI can write a convincing sheet, so the card is a first filter and not proof. The 2-minute class check is still available to teachers who want certainty.</p>
+    <p><b>Also changed:</b> the questions were revised after a smaller AI model attempted them and a review agent compared its answers with the rubric. For example, the salt task now asks students to sort each AI sentence into Agrees / Disagrees / Not tested; the pendulum task adds a 50 cm prediction; the sweetness task tests the "just add one spoon" rule.</p>
+  </section>
+
   <section class="card" id="s1">
     <h2>1. Executive summary</h2>
     <p><b>Problem.</b> A chatbot can now write a complete, convincing answer to most worksheet homework. India's curriculum framework names this risk directly: students "outsourcing" thinking to AI through "homework and assignments being done by AI" (<a href="https://ncert.nic.in/pdf/NCFSE-2023-August_2023.pdf">NCF-SE 2023</a>, PDF p.193).</p>
-    <p><b>Proposed solution.</b> Five homework tasks built on activities already in the NCERT books. In each one the student predicts, then measures or tests something at home, then explains, then teaches it back to a family member. The website shows the tasks directly. Students need no login, and there is nothing to grade online. A teacher sends one link and spends 2 minutes the next day on a fresh-case question in class.</p>
+    <p><b>Proposed solution.</b> Five homework tasks built on activities already in the NCERT books. In each one the student predicts, then measures or tests something at home, then explains, then teaches it back to a family member. The website shows the tasks directly. Students need no login. An online checker grades the written answers against the task rubric and the numbers for consistency, and returns a signed result card, so the teacher marks nothing. A 2-minute fresh-case question in class stays available for extra certainty.</p>
     <p><b>What it does and does not do.</b> None of the tasks is AI-proof. In our red-team, a chatbot wrote a plausible answer sheet for all five. The value is that an honest student learns from doing it, and that the in-class check shows who did. That second point is untested until a real classroom trial.</p>
   </section>
 
@@ -149,10 +157,10 @@ ol.toc{columns:2;font-size:15px}
     <h2>8. Minimal product</h2>
     <div class="tw"><table>
       <tr><th>Built now (essential)</th><th>Later, if a trial shows it is needed</th><th>Left out on purpose</th></tr>
-      <tr><td>Assignment pages that open directly, no login<br>Textbook context: the NCERT passage behind each task, and a “why we ask” line for every question, linked to the highlighted sentence<br>Prediction locked before the activity<br>Structured answers saved on the student's own device<br>Feedback hints in the browser (no server)<br>Answer sheet to print or copy into the notebook<br>Printable paper version of each task<br>Teacher page: link, answer key, rubric, misconceptions, class check</td><td>AI feedback on written explanations (see below)<br>Class view of pooled results (e.g. everyone's handspans)<br>Hindi and regional-language versions<br>More tasks (Grade 6 Maths first)</td><td>Accounts, class codes, PINs<br>Online grading and dashboards<br>Analytics, leaderboards<br>Tracking students</td></tr>
+      <tr><td>Assignment pages that open directly, no login<br>Textbook context: the NCERT passage behind each task, and a “why we ask” line for every question, linked to the highlighted sentence<br>Prediction locked before the activity<br>Structured answers saved on the student's own device<br>Feedback hints in the browser (no server)<br>Answer sheet to print or copy into the notebook<br>Printable paper version of each task<br>Teacher page: link, answer key, rubric, misconceptions, class check<br>Answer checker (small AI model) with signed result cards and a code check page<br>Cost controls: one grading per distinct sheet, per-network and daily caps</td><td>AI feedback on written explanations (see below)<br>Class view of pooled results (e.g. everyone's handspans)<br>Hindi and regional-language versions<br>More tasks (Grade 6 Maths first)</td><td>Accounts, class codes, PINs<br>Teacher dashboards<br>Analytics, leaderboards<br>Storing or tracking students' answers</td></tr>
     </table></div>
     <p><b>If AI feedback is added later:</b> give feedback only on the "Explain" answers, with a tutor-style prompt that asks questions and does not give answers (the setup that avoided harm in <a href="https://doi.org/10.1073/pnas.2422633122">Bastani et al.</a>). Limit cost per answer sheet rather than per student: one feedback request per question, plus one more after a revision, cached by the exact text. Use a small model and a short prompt. Students can still revise as much as they like without new requests.</p>
-    <p class="ev">An earlier prototype had class codes, PINs and server grading. It was removed because the red-team showed server checks cannot stop AI-made numbers, and it added setup for teachers.</p>
+    <p class="ev">An earlier prototype had class codes, PINs and rule-based server checks. It was removed because it added setup for teachers and its numeric checks could not tell real from invented numbers. The current checker is stateless: it stores nothing and signs a short code.</p>
   </section>
 
   <section class="card" id="s9">

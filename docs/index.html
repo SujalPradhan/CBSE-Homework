@@ -40,6 +40,7 @@ details.book blockquote{margin:8px 0;padding-left:12px;border-left:3px solid var
   <p class="muted no-print" style="margin-top:28px">For teachers: <a href="teacher.html">answer keys, rubrics and printable sheets</a> · <a href="checklist.html">How these were designed and tested</a></p>
 </main>
 <script src="assignments.js"></script>
+<script src="api.js"></script>
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -58,7 +59,7 @@ addEventListener('hashchange', route);
 function showList() {
   $('#one').classList.add('hide'); $('#list').classList.remove('hide');
   $('#list').innerHTML = `<div class="note" style="margin-top:12px">Each task asks you to <b>predict</b>, then <b>measure or test something at home</b>, then <b>explain</b>. You may use AI to help you understand, but do the activity yourself: your teacher will ask about <b>your</b> numbers in class.</div>
-  <div class="tasks">${ASSIGNMENTS.map(a => `<a class="task" href="#${a.id}" style="text-decoration:none"><span class="chip">Grade ${a.grade}</span><span class="chip">${a.subject}</span><b>${esc(a.title)}</b><span class="muted">${a.minutes} min · ${load(a.id)._done ? '✓ answer sheet ready' : 'not started'}</span></a>`).join('')}</div>`;
+  <div class="tasks">${ASSIGNMENTS.map(a => `<a class="task" href="#${a.id}" style="text-decoration:none"><span class="chip">Grade ${a.grade}</span><span class="chip">${a.subject}</span><b>${esc(a.title)}</b><span class="muted">${a.minutes} min · ${load(a.id)._card ? '✓ ' + esc(LEVEL_TEXT[load(a.id)._card.level]) : load(a.id)._done ? 'answer sheet ready' : 'not started'}</span></a>`).join('')}</div>`;
   scrollTo(0, 0);
 }
 
@@ -105,7 +106,7 @@ function showOne(A) {
     const qs = byPhase(p); if (!qs.length) continue;
     h += `<div class="phase">Step ${n++} · ${p}</div>` + qs.map(Q => `<div class="q"><label for="q_${Q.id}">${esc(Q.label)}</label>${qwhy(A, Q)}${field(Q, a, !locked)}</div>`).join('');
   }
-  h += `<p style="margin-top:16px"><button id="check" ${locked ? '' : 'disabled'}>Check my work</button> <button class="ghost" id="sheet" ${locked ? '' : 'disabled'}>My answer sheet</button></p><div id="fb"></div></section><div id="out"></div>`;
+  h += `<p style="margin-top:16px"><button class="ghost" id="check" ${locked ? '' : 'disabled'}>Quick hints</button> <button id="verify" ${locked ? '' : 'disabled'}>Check my answers</button> <button class="ghost" id="sheet" ${locked ? '' : 'disabled'}>My answer sheet</button></p><p class="muted">Quick hints work offline. “Check my answers” sends your answers (no name) to a checker and gives you a result card.</p><div id="fb"></div><div id="vout"></div></section><div id="out"></div>`;
   $('#one').innerHTML = h; scrollTo(0, 0);
 
   const read = () => {
@@ -131,6 +132,30 @@ function showOne(A) {
       (empty.length ? `<div class="fb info">Still empty: ${empty.map(Q => esc(Q.label.split(/[?:.]/)[0])).join(' · ')}</div>` : '');
   };
   $('#sheet').onclick = () => { const r = read(); r._done = true; save(A.id, r); showSheet(A, r); };
+  $('#verify').onclick = async () => {
+    const r = read(); save(A.id, r);
+    const answers = Object.fromEntries(A.questions.map(Q => [Q.id, r[Q.id]]));
+    const box = $('#vout'), btn = $('#verify');
+    btn.disabled = true; box.innerHTML = '<div class="fb info">Checking your answers… this can take a few seconds.</div>';
+    try {
+      const res = await fetch(API + '/api/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ task: A.id, answers }) });
+      const j = await res.json();
+      if (j.error) box.innerHTML = `<div class="fb warn">${esc(j.error)}</div>`;
+      else if (j.status === 'incomplete') box.innerHTML = `<div class="fb warn"><b>Almost there.</b> Please answer these first:<ul>${j.missing.map(m => `<li>${esc(m)}</li>`).join('')}</ul></div>`;
+      else {
+        const cur = load(A.id); cur._card = { code: j.code, level: j.level }; save(A.id, cur);
+        box.innerHTML = `<div class="card" style="margin:12px 0 0"><h3 style="margin-top:0">Result: ${esc(LEVEL_TEXT[j.level])}</h3>
+          ${j.numbers === 'check' ? `<div class="fb warn"><b>Your numbers need a second look.</b><ul>${j.numberNotes.map(n => `<li>${esc(n)}</li>`).join('')}</ul></div>` : '<div class="fb ok">Your numbers agree with each other.</div>'}
+          <div class="tw"><table>${j.questions.map(q => `<tr><td>${esc(q.label)}</td><td><b>${esc(LEVEL_TEXT[q.level])}</b></td><td>${esc(q.feedback)}</td></tr>`).join('')}</table></div>
+          <p style="margin-top:12px">Your code: <b>${esc(j.code)}</b></p>
+          <p><a class="task" style="display:inline-block;padding:10px 14px" href="card.html#${encodeURIComponent(j.code)}" target="_blank" rel="noopener">Open my result card ↗</a></p>
+          <p class="muted">You can change your answers and check again. The card shows what your <i>written answers</i> showed, not that you did the activity.</p></div>`;
+      }
+    } catch (e) {
+      box.innerHTML = '<div class="fb warn">Could not reach the checker. Your answers are saved on this device. Try again later, or print your answer sheet.</div>';
+    }
+    btn.disabled = false;
+  };
 }
 
 function showSheet(A, r) {

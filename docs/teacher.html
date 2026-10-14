@@ -20,15 +20,16 @@ td:first-child{white-space:nowrap;font-weight:700}
 <body>
 <main>
   <h1 class="no-print">For teachers</h1>
-  <p class="muted no-print">How to use: pick a task, send its link (or print the sheet), and the next day spend 2 minutes on the class check. No login, no setup, nothing to mark online.</p>
+  <p class="muted no-print">How to use: send the link for a task. Students do it at home and get a result card with a code. You only look at the card. There is nothing to mark.</p>
   <div class="card no-print">
-    <p><b>What students bring back:</b> their answer sheet (in the notebook, printed, or as a photo) with the sentence a family member said back to them.</p>
-    <p><b>How to check in 2 minutes:</b> ask the class-check questions on a fresh case, with phones away, and ask two students to read their family member’s sentence. Use the rubric to sort a few notebooks into Got it, Partly or Not yet.</p>
-    <p style="margin:0"><b>About AI:</b> an AI can write a convincing answer sheet for every task. It cannot measure the student’s table or taste their drink. The class check shows who learned it.</p>
+    <p><b>What the card is:</b> a signed result (Got it / Partly / Not yet) with a code. Open <a href="card.html">the card page</a> and paste a code to check that it is genuine. A student cannot change the level, because the code is signed.</p>
+    <p><b>What “verified” means:</b> (1) the student’s measurements agree with each other, and (2) their written answers met this task’s rubric, as judged by an AI checker. It does <b>not</b> prove the activity was done: an AI can write convincing answers and invent numbers. Use the card as a first filter.</p>
+    <p><b>If you want certainty:</b> two optional things take about 2 minutes. Ask the class-check question (below) with phones away, and ask two students to say what question their family member asked them. Identical codes from different students on the same day mean identical answers.</p>
+    <p style="margin:0"><b>Privacy:</b> students’ answers are sent to the checker and are not stored. The card shows no name.</p>
   </div>
   <div id="list"></div>
   <p class="no-print" style="margin-top:16px"><button class="ghost" onclick="document.querySelectorAll('details').forEach(d=>d.open=true);print()">Print all teacher notes</button></p>
-  <p class="muted no-print" style="margin-top:20px"><a href="./">Student page</a> · <a href="checklist.html">How these were designed and tested</a></p>
+  <p class="muted no-print" style="margin-top:20px"><a href="./">Student page</a> · <a href="card.html">Check a code</a> · <a href="checklist.html">How these were designed and tested</a></p>
 </main>
 <script src="assignments.js"></script>
 <script src="teacher-notes.js"></script>

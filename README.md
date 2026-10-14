@@ -25,8 +25,9 @@ The tasks are designed to still teach something when students use AI or work tog
 Page references for each task are in [validation/ncert_sources.md](validation/ncert_sources.md).
 
 ## How it works
-The site is static, with no server. Answers stay on the student's own device, and students copy or print their answer sheet for the teacher.
+The site is static. Answers stay on the student's own device until the student presses “Check my answers”, which sends them to a small checker (a Cloudflare Worker calling a lightweight model through AI Pipe). The checker stores nothing and returns a signed result card. A teacher can check a code on `card.html`.
 - `docs/assignments.js`: what students see (instructions, questions, feedback hints).
 - `docs/teacher-notes.js`: answer keys and rubrics. They are loaded only by the teacher page, but they are still public files.
+- `scripts/build_grader_data.mjs`: copies the questions and rubrics into the checker so the two never drift apart. The checker's source is in a separate private repository.
 
 Design follows the tests in Anand S's [The Exam Is a Hypothesis](https://www.s-anand.net/blog/the-exam-is-a-hypothesis/).

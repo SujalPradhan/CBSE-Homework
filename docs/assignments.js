@@ -42,8 +42,6 @@ const ASSIGNMENTS = [
     questions: [
       { id: 'pred', phase: 'Predict', type: 'choice', label: 'Before you measure: who will need MORE handspans to cover the table?', options: ['Me', 'The adult', 'We will need the same number'],
         why: 'In the book, Tasneem guesses why the five friends got different counts. Make your own guess before you see the answer at home.', ref: 'Our handspans are of different sizes' },
-      { id: 'what', phase: 'Record', type: 'text', label: 'What did you measure, and what was kept on it?',
-        why: 'Every home is different. This is the part of your answer only you can write.' },
       { id: 'hs1', phase: 'Record', type: 'number', label: 'Your handspan', unit: 'cm', min: 5, max: 30, why: 'This is the size of YOUR unit.' },
       { id: 'n1', phase: 'Record', type: 'number', label: 'Your handspans along the table', unit: 'handspans', min: 1, max: 60, why: 'Like the friends in Table 5.1, write “in between” answers as halves.', ref: 'Table 5.1' },
       { id: 'hs2', phase: 'Record', type: 'number', label: "The adult's handspan", unit: 'cm', min: 5, max: 35 },
@@ -52,12 +50,12 @@ const ASSIGNMENTS = [
         why: 'Deepa says, “No wonder people use scales and measuring tapes.” Now you measure the same table in a unit that does not change from person to person.', ref: 'No wonder people use scales and measuring tapes' },
       { id: 'gap', phase: 'Calculate', type: 'text', label: "Multiply the adult's handspan by their count. How close is it to the ruler length? Why is it not exactly the same?",
         why: 'A length has two parts: a number and a unit. Handspan × count should give back the length in cm. If it does not quite match, the reason teaches you something about measuring.' },
-      { id: 'why', phase: 'Explain', type: 'text', label: 'Was your prediction right? Why did you and the adult get different numbers for the same table?',
-        why: 'This is Hardeep’s question in the book: “But why should the number be different?” Answer it with your own numbers.', ref: 'But why should the number be different?' },
-      { id: 'shop', phase: 'Explain', type: 'text', label: 'A cloth seller measures 4 handspans of cloth for you. Would you rather she had a big hand or a small hand? Why?',
-        why: 'The book says body units “differ from person to person”. Here you use that idea in a real situation where it matters to you.', ref: 'differ from person to person' },
-      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Explain to the adult why we need a standard unit. Write the sentence THEY say back to you.',
-        why: 'If you can explain it so someone else understands, you have really learned it.' },
+      { id: 'why', phase: 'Explain', type: 'text', label: 'Was your prediction right? Explain using your two handspan sizes. If the adult measured the table with YOUR ruler, what number would they get, and why?',
+        why: 'Hardeep asks in the book: “But why should the number be different?” A unit that does not depend on whose hand it is gives the same number whoever measures.', ref: 'But why should the number be different?' },
+      { id: 'shop', phase: 'Explain', type: 'text', label: 'A cloth seller measures 4 handspans of cloth for you. How many cm is that using YOUR handspan? Using the adult’s? What should the seller use instead, and why?',
+        why: 'The book says body units “differ from person to person”. Use your own numbers to see how much it matters.', ref: 'differ from person to person' },
+      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Tell an adult what you found. What question did they ask you, and what did you answer?',
+        why: 'If you can answer someone else’s question in your own words, you have really learned it.' },
     ],
     feedback(a) {
       const f = [], check = (hs, n, who) => {
@@ -102,28 +100,33 @@ const ASSIGNMENTS = [
       'Pull the bob a little to one side (not far) and let go. Time 10 oscillations. One oscillation = from one side, to the other side, and back again.',
       'Time it a second time. Write down both times.',
       'Make the thread 4 times longer: 100 cm. Time 10 oscillations, twice.',
-      'Bonus: keep 100 cm but use a heavier bob. Does the time change?',
+      'Make the thread 50 cm (halfway between 25 and 100). Time 10 oscillations, twice.',
+      'Go back to 100 cm (measure to the middle of the bob) and use a heavier bob. Time 10 oscillations. Does the time change?',
     ],
     together: 'Working with a friend? One of you counts while the other times, then swap jobs. Both of you write your own answers.',
     questions: [
       { id: 'pred', phase: 'Predict', type: 'choice', label: 'If you make the thread 4 times longer, the time for one oscillation (there and back) will…', options: ['Stay the same', 'Double', 'Become 4 times', 'Get shorter'],
         why: 'The book asks: “Does the time period change? If so, how does the length affect it?” Commit to an answer before you test it, like a scientist.', ref: 'Does the time period change? If so, how does the length affect it?' },
+      { id: 'p50', phase: 'Predict', type: 'number', label: '50 cm is halfway between 25 cm and 100 cm. Predict the time for 10 oscillations at 50 cm.', unit: 's', min: 1, max: 100,
+        why: 'You have a guess for 4 times longer. Now you guess a length in between, before you time it.' },
       { id: 't1a', phase: 'Record', type: 'number', label: '25 cm: time for 10 oscillations, try 1', unit: 's', min: 1, max: 100,
         why: 'One swing is too quick to time with a watch, so the book times 10 and divides by 10.', ref: 'Divide the time taken for 10 oscillations by 10' },
       { id: 't1b', phase: 'Record', type: 'number', label: '25 cm: time for 10 oscillations, try 2', unit: 's', min: 1, max: 100,
         why: 'The book says to repeat 3–4 times. Real timings are never exactly equal; how close are yours?', ref: 'Repeat this activity 3–4 times' },
       { id: 't2a', phase: 'Record', type: 'number', label: '100 cm: time for 10 oscillations, try 1', unit: 's', min: 1, max: 100 },
       { id: 't2b', phase: 'Record', type: 'number', label: '100 cm: time for 10 oscillations, try 2', unit: 's', min: 1, max: 100 },
-      { id: 'mass', phase: 'Record', type: 'choice', label: 'Bonus: with a heavier bob at 100 cm, the time…', options: ['Did not change much', 'Got longer', 'Got shorter', 'I did not try'],
+      { id: 't3', phase: 'Record', type: 'number', label: '50 cm: time for 10 oscillations (time it twice and write the average)', unit: 's', min: 1, max: 100,
+        why: 'Does the in-between length give an in-between time? Compare with the guess you locked.' },
+      { id: 'mass', phase: 'Record', type: 'choice', label: 'With a heavier bob at 100 cm (length measured to the middle of the bob), the time…', options: ['Did not change much', 'Got longer', 'Got shorter'],
         why: 'The book’s last question: “does the bob’s mass also matter?” A fair test changes only one thing at a time.', ref: 'does the bob’s mass also matter?' },
       { id: 'hard', phase: 'Record', type: 'text', label: 'What was hardest about counting or timing, and how did you fix it?',
         why: 'Real scientists always write down what went wrong. Only someone who did it can answer this.' },
-      { id: 'why', phase: 'Explain', type: 'text', label: 'Was your prediction right? When the thread became 4 times longer, how many times longer did one oscillation take? Use your numbers.',
+      { id: 'why', phase: 'Explain', type: 'text', label: 'Was your prediction right? When the thread became 4 times longer, how many times longer did one oscillation take? Was the 50 cm time exactly halfway between the other two?',
         why: 'Galileo found the time is the same for a given length. You have now tested what happens when the length changes.', ref: 'always the same for a pendulum of a given length' },
-      { id: 'apply', phase: 'Explain', type: 'text', label: 'A pendulum clock is running slow (its pendulum takes too long for each swing). Should the shopkeeper make its pendulum shorter or longer? Why?',
+      { id: 'apply', phase: 'Explain', type: 'text', label: 'A pendulum clock shows 11:55 when the real time is 12:00. Should its pendulum be shorter or longer? Use your 25 cm and 100 cm results.',
         why: 'Huygens built the first pendulum clock using Galileo’s idea. This is the real problem every clockmaker had to solve.' },
-      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Show an adult both pendulums and explain. Write the sentence THEY say back to you.',
-        why: 'If you can explain it so someone else understands, you have really learned it.' },
+      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Tell an adult what you found. What question did they ask you, and what did you answer?',
+        why: 'If you can answer someone else’s question in your own words, you have really learned it.' },
     ],
     feedback(a) {
       const f = [], avg = (x, y) => (x && y ? (x + y) / 2 : x || y);
@@ -131,10 +134,14 @@ const ASSIGNMENTS = [
       if (a.t1a && a.t1b && Math.abs(a.t1a - a.t1b) > 0.15 * avg(a.t1a, a.t1b)) f.push(['warn', 'Your two tries at 25 cm are quite different. Time it once more.']);
       if (a.t2a && a.t2b && Math.abs(a.t2a - a.t2b) > 0.15 * avg(a.t2a, a.t2b)) f.push(['warn', 'Your two tries at 100 cm are quite different. Time it once more.']);
       if (t1 && t2) {
-        f.push(['info', `Time period: ${(t1 / 10).toFixed(2)} s at 25 cm and ${(t2 / 10).toFixed(2)} s at 100 cm. The longer pendulum took ${(t2 / t1).toFixed(1)} times as long.`]);
+        f.push(['info', `Time period: ${(t1 / 10).toFixed(2)} s at 25 cm and ${(t2 / 10).toFixed(2)} s at 100 cm.`]);
         const T = L => 2 * Math.PI * Math.sqrt(L / 981);
         if (Math.abs(t1 / 10 / T(25) - 1) > 0.2 || Math.abs(t2 / 10 / T(100) - 1) > 0.2) f.push(['warn', 'Your times look unusual for these lengths. Did you count full oscillations (there AND back)? Did you measure to the middle of the bob?']);
         if (a.pred) f.push(['info', `You predicted: “${a.pred}”. Compare that with your result.`]);
+        if (a.p50 && a.t3) {
+          if (Math.abs(a.t3 / 10 / T(50) - 1) > 0.2) f.push(['warn', 'Your 50 cm time looks unusual. Did you count full oscillations and measure to the middle of the bob?']);
+          f.push(['info', `At 50 cm you predicted ${a.p50} s and measured ${a.t3} s.`]);
+        }
       }
       return f;
     },
@@ -177,7 +184,7 @@ const ASSIGNMENTS = [
       'Keep adding 1 level teaspoon at a time, stirring well each time (about 1 minute).',
       'Stop when some salt stays at the bottom even after stirring. Count only the spoons that fully dissolved (do not count the last one).',
       'Dip a clean finger in the clear part and taste one drop (do not drink it). Is the salt really gone?',
-      'Add 2 spoons of water to the glass and stir. Watch the salt at the bottom.',
+      'Before the next step, write your guess in the notebook: will the leftover salt stay, partly dissolve, or all dissolve? Then add 2 spoons of water, stir for a minute and watch the salt at the bottom.',
       'Afterwards, use the salt water for cleaning or pour it on a waste patch, not on plants.',
     ],
     together: 'Working with a friend? Each of you does the experiment at home with your own glass and spoon, then compare your spoon counts: why are they different?',
@@ -186,20 +193,20 @@ const ASSIGNMENTS = [
         why: 'Most people have never counted. Write a real guess, then see how close you get.' },
       { id: 'n', phase: 'Record', type: 'number', label: 'Spoons that fully dissolved', unit: 'spoons', min: 0, max: 100,
         why: 'This is the textbook’s own question: “How many spoons of salt were you able to dissolve before some of it remained undissolved?”', ref: 'How many spoons of salt were you able to dissolve before some of it remained undissolved?' },
-      { id: 'bottom', phase: 'Record', type: 'text', label: 'What did the salt at the bottom look like? What happened to it when you added 2 more spoons of water?',
-        why: 'The book says water “has reached its limit”. Adding water changes the limit. What you see tells you whether the limit belongs to the salt or to the amount of water.', ref: 'it has reached its limit' },
+      { id: 'bottom', phase: 'Record', type: 'text', label: 'Before adding the 2 spoons of water, what did you guess: leftover salt will stay, partly dissolve, or all dissolve? What actually happened?',
+        why: 'Another prediction, this time about the limit. Compare your guess with what you see.', ref: 'it has reached its limit' },
       { id: 'taste', phase: 'Record', type: 'choice', label: 'The clear water tasted…', options: ['Salty', 'Like plain water'],
         why: 'You cannot see dissolved salt. Your tongue can tell you whether it is still there.' },
       { id: 'off', phase: 'Explain', type: 'text', label: 'How far off was your prediction? Why do you think so?',
         why: 'Being surprised is how you learn. Write what surprised you.' },
-      { id: 'wrong', phase: 'Explain', type: 'checks', label: 'Which AI sentences does YOUR experiment show are wrong? Tick them.', options: ['1', '2', '3', '4'],
-        why: 'A claim is only wrong if your evidence goes against it. For each sentence, ask: did I see something that disagrees?' },
-      { id: 'fix', phase: 'Explain', type: 'text', label: 'Rewrite ONE wrong sentence so it is correct. Use the word “saturated” and what you saw.',
+      { id: 'sort', phase: 'Explain', type: 'text', label: 'For each AI sentence (1, 2, 3, 4), write Agrees, Disagrees, or Not tested by my experiment. Next to each, write the thing you saw (or did not see) that decides it.',
+        why: 'A claim can be wrong, not contradicted, or just not tested. Your evidence decides which.' },
+      { id: 'fix', phase: 'Explain', type: 'text', label: 'Pick one sentence you marked Disagrees and rewrite it so it is correct. Use the word “saturated” and what you saw.',
         why: 'The book defines a saturated solution as one where “the solute stops dissolving and begins to settle at the bottom”.', ref: 'the solution is called a saturated solution at that particular temperature' },
-      { id: 'untested', phase: 'Explain', type: 'text', label: 'Which sentence could you NOT check with this experiment? Describe an experiment (with an adult) that would check it.',
-        why: 'The book itself asks: “Does temperature affect the solubility of a solute?” Your experiment kept the temperature the same, so it cannot answer that.', ref: 'Does temperature affect the solubility of a solute?' },
-      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Explain "saturated solution" to an adult using your glass. Write the sentence THEY say back to you.',
-        why: 'If you can explain it so someone else understands, you have really learned it.' },
+      { id: 'design', phase: 'Explain', type: 'text', label: 'Sentence 4 is about temperature. Design a test using SUGAR in cold and warm water, with an adult handling the warm water. What will you keep the same, and what will you change?',
+        why: 'The book asks: “Does temperature affect the solubility of a solute?” A fair test keeps everything else the same. (Sugar shows a clear difference; salt hardly changes.)', ref: 'Does temperature affect the solubility of a solute?' },
+      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Tell an adult what you found. What question did they ask you, and what did you answer?',
+        why: 'If you can answer someone else’s question in your own words, you have really learned it.' },
     ],
     feedback(a) {
       const f = [];
@@ -209,12 +216,10 @@ const ASSIGNMENTS = [
         else f.push(['info', `${a.n} spoons dissolved. What does it mean that the next spoon would not dissolve, however long you stirred?`]);
       }
       if (a.taste === 'Like plain water') f.push(['warn', 'Taste again: dissolved salt is still in the water, even though you cannot see it.']);
-      const w = a.wrong || [];
-      if (w.length) {
-        if (w.includes('1')) f.push(['warn', 'Look again at sentence 1. Did anything you saw go against it?']);
-        if (!w.includes('2') && a.n) f.push(['warn', 'Your salt stopped dissolving after a few spoons. Which sentence does that disagree with?']);
-        if (!w.includes('3') && a.taste === 'Salty') f.push(['warn', 'You tasted salt in the clear water. Which sentence does that disagree with?']);
-        if (w.includes('4')) f.push(['info', 'You ticked sentence 4. Did your experiment change the temperature? If not, can it show that sentence is wrong?']);
+      if (typeof a.sort === 'string' && a.sort.trim()) {
+        const hits = [1, 2, 3, 4].filter(k => new RegExp('(^|\\D)' + k + '(\\D|$)').test(a.sort));
+        if (hits.length < 4) f.push(['info', 'Write a line for each of the four sentences, with what you saw that decides it.']);
+        if (!/not tested|untested|can.?t (test|check)|cannot (test|check)/i.test(a.sort)) f.push(['info', 'Did your experiment test every sentence? Think about what you changed and what you did not.']);
       }
       return f;
     },
@@ -249,7 +254,7 @@ const ASSIGNMENTS = [
     },
     materials: ['A textbook or notebook with at least 200 pages', 'A ruler with mm marks'],
     steps: [
-      'A sheet is one leaf of paper. It has 2 pages (front and back). 200 pages = 100 sheets.',
+      'Write down which book or notebook you are measuring. A sheet is one leaf of paper. It has 2 pages (front and back). 200 pages = 100 sheets.',
       'Try to measure ONE sheet with your ruler. What happens?',
       'Squeeze together 50 sheets (100 pages). Measure the stack in mm.',
       'Squeeze together 100 sheets (200 pages). Measure the stack in mm.',
@@ -261,21 +266,18 @@ const ASSIGNMENTS = [
         why: 'The smallest mark on your ruler is 1 mm. Is a sheet more or less than that? How much less?' },
       { id: 'one', phase: 'Record', type: 'text', label: 'What happened when you tried to measure ONE sheet with the ruler?',
         why: 'Like Sonu’s screws, a sheet is too thin to see the difference on a ruler. Notice the problem before you solve it.', ref: 'how little the difference was because the screws looked nearly the same' },
-      { id: 'book1', phase: 'Record', type: 'text', label: 'Which book or notebook did you use?', why: 'Different paper has different thickness. Your answer belongs to your book.' },
       { id: 'h50', phase: 'Record', type: 'number', label: 'Height of 50 sheets', unit: 'mm', min: 0.5, max: 50 },
       { id: 'h100', phase: 'Record', type: 'number', label: 'Height of 100 sheets', unit: 'mm', min: 0.5, max: 100 },
       { id: 't50', phase: 'Calculate', type: 'number', label: 'One sheet, from the 50-sheet stack', unit: 'mm', min: 0, max: 2,
         why: 'You are splitting a length into 50 equal parts, just as the book splits a unit into 10, 100 and 1000 parts.', ref: 'a thousand such parts make up a unit' },
       { id: 't100', phase: 'Calculate', type: 'number', label: 'One sheet, from the 100-sheet stack', unit: 'mm', min: 0, max: 2,
         why: 'Your answer will have thousandths of a millimetre. How many thousandths make one millimetre?', ref: 'How many thousandths make one unit?' },
-      { id: 'diff', phase: 'Explain', type: 'text', label: 'Your two answers are probably not exactly the same. Why not?',
-        why: 'Every real measurement has a little error. Spotting where it comes from is part of measuring well.' },
-      { id: 'better', phase: 'Explain', type: 'text', label: 'Your ruler can be off by about half a mm. Which stack gives the more correct answer, and why?',
-        why: 'Half a millimetre of error shared among 50 sheets, or among 100 sheets: which is smaller per sheet?' },
-      { id: 'book', phase: 'Explain', type: 'text', label: 'Take a DIFFERENT book. Write its name and its last page number. Measure its thickness without the covers. Use your sheet thickness to estimate its pages. How close did you get? Show your working.',
+      { id: 'better', phase: 'Explain', type: 'text', label: 'Suppose each stack was measured 0.5 mm too tall. Recalculate the thickness of one sheet from each stack. Which answer moved more? So which stack do you trust more, and why?',
+        why: 'Real rulers are never perfect. Your own numbers show which stack is safer.' },
+      { id: 'book', phase: 'Explain', type: 'text', label: 'Take a DIFFERENT book and write its name. Measure its thickness without the covers. Estimate how many SHEETS it has, then how many pages. Compare with its last page number (a few pages at the front may not be numbered). How close did you get? Show your working.',
         why: 'Now you use your answer on a new problem, which is how you know your method works.' },
-      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Explain to an adult why you measured 100 sheets instead of one. Write the sentence THEY say back to you.',
-        why: 'If you can explain it so someone else understands, you have really learned it.' },
+      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Tell an adult what you found. What question did they ask you, and what did you answer?',
+        why: 'If you can answer someone else’s question in your own words, you have really learned it.' },
     ],
     feedback(a) {
       const f = [];
@@ -319,9 +321,9 @@ const ASSIGNMENTS = [
     materials: ['Small cups or glasses (all the same size)', 'Water', 'Sugar (about 10 teaspoons) and a teaspoon', 'Lemon (optional)', 'One person at home to taste'],
     safety: 'Ask before using sugar. Use a clean spoon for each taste and do not share cups. If someone cannot have sugar, use a pinch of turmeric or a little tea in water and compare the COLOUR instead of the taste. Drink or use the sweet water afterwards; do not waste it.',
     steps: [
-      'Make drink A: 1 cup of water + the number of spoons of sugar your family likes (try 2). Stir well.',
+      'Make drink A: 1 cup of water + the number of spoons of sugar your family likes (try 2 or 3). Stir well.',
       'Work out how much sugar 2 cups of water need for the SAME sweetness. Make drink B in a jug.',
-      'Make drink C: 2 cups of water with the SAME number of spoons as drink A (do not double it).',
+      'Make drink C using your cousin’s rule: 2 cups of water with just ONE more spoon than drink A.',
       'Pour a little of A, B and C into three cups. Ask someone at home to taste without knowing which is which.',
       'Design drink D yourself: choose a number of cups, work out the sugar, make it, and test it against A.',
     ],
@@ -329,11 +331,11 @@ const ASSIGNMENTS = [
     questions: [
       { id: 'a', phase: 'Record', type: 'number', label: 'Spoons of sugar in drink A (1 cup of water)', unit: 'spoons', min: 0.5, max: 10,
         why: 'Your family’s recipe is your ratio, cups : spoons. Everyone’s may be different.', ref: 'for every ‘a’ units of the first quantity, there are ‘b’ units of the second quantity' },
-      { id: 'pred', phase: 'Predict', type: 'choice', label: 'Before tasting: which drink will taste LESS sweet than A?', options: ['B', 'C', 'Both the same as A'],
-        why: 'Images A and B in the book both lost 20 mm, yet B looked different. Will adding the same sugar to more water work any better?', ref: 'Even though the difference (through subtraction) is the same, the images look different' },
+      { id: 'pred', phase: 'Predict', type: 'choice', label: 'Your cousin says: “For 2 cups, just add 1 more spoon than drink A.” Using that rule, will the 2-cup drink taste the same as A, sweeter, or less sweet?', options: ['Same as A', 'Sweeter than A', 'Less sweet than A'],
+        why: 'Images A and B in the book both lost 20 mm, yet B looked different. Does adding the same amount keep a ratio?', ref: 'Even though the difference (through subtraction) is the same, the images look different' },
       { id: 'b', phase: 'Calculate', type: 'number', label: 'Spoons for drink B (2 cups) so it tastes the same as A', unit: 'spoons', min: 0, max: 40,
         why: 'This is Kesang’s problem with your own recipe: “each term in the ratio must change by the same factor”.', ref: 'each term in the ratio must change by the same factor' },
-      { id: 'words', phase: 'Record', type: 'text', label: 'What words did the taster use for each cup? (e.g. "watery", "same as the first one")',
+      { id: 'words', phase: 'Record', type: 'text', label: 'Which cup did your taster pick as the least sweet? Did they say A and B tasted the same? Write their words.',
         why: 'Only you know what your taster said. Their words are your evidence.' },
       { id: 'dcups', phase: 'Record', type: 'number', label: 'Drink D: cups of water you chose', unit: 'cups', min: 0.5, max: 20, why: 'You choose the problem this time.' },
       { id: 'dspoons', phase: 'Calculate', type: 'number', label: 'Drink D: spoons of sugar you worked out', unit: 'spoons', min: 0, max: 100 },
@@ -343,10 +345,10 @@ const ASSIGNMENTS = [
         why: 'Sometimes you cannot just make more: you have a limit. The answer does not have to be a whole number.' },
       { id: 'ratios', phase: 'Explain', type: 'text', label: 'Write cups : spoons for A, B and C in simplest form. Which two are proportional? Write it with ::.',
         why: 'The book compares ratios by writing them in simplest form, then uses :: to show they are proportional.', ref: 'So a : b :: c : d indicates that the ratios a : b and c : d are proportional.' },
-      { id: 'why', phase: 'Explain', type: 'text', label: 'C had the same sugar as A. Explain why it tasted different. Use the words "per cup".',
-        why: 'This is the same mistake as image B: the amount changed, but not by the same factor.', ref: 'Since the width and height have not changed by the same factor, the images look different.' },
-      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Explain to your taster why C tasted different. Write the sentence THEY say back to you.',
-        why: 'If you can explain it so someone else understands, you have really learned it.' },
+      { id: 'why', phase: 'Explain', type: 'text', label: 'How many more spoons must you add to C to make it taste like A? Work it out, add them, taste again, and write what happened.',
+        why: 'This is the same mistake as image B: the amount changed, but not by the same factor. Fix it with the ratio, then check with your tongue.', ref: 'Since the width and height have not changed by the same factor, the images look different.' },
+      { id: 'family', phase: 'Teach it back', type: 'text', label: 'Tell an adult what you found. What question did they ask you, and what did you answer?',
+        why: 'If you can answer someone else’s question in your own words, you have really learned it.' },
     ],
     feedback(a) {
       const f = [], has = x => x !== '' && x != null;
