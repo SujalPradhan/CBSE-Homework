@@ -25,13 +25,24 @@ const view = $('#view'), bar = $('#bar');
 const linear = a => ({ ...a, screens: [{ id: 'all', groups: a.screens, q: a.screens.flatMap(sc => sc.q) }] });
 let A = null, C = null, S = null;   // assignment, case, state
 
-function route() {
+async function route() {
   const qs = new URLSearchParams(location.search), id = location.hash.slice(1) || qs.get('a'), a = ASSIGNMENTS.find(x => x.id === id);
-  if (qs.has('print') && a) return printSheet(a);
   if (!a) return list();
   A = linear(a); S = load(a.id);
-  if (!S.set) { S.set = 10 + Math.floor(Math.random() * 90); S.step = 0; S.ans = {}; S.locked = {}; save(a.id, S); }
-  S.ans = S.ans || {}; S.locked = S.locked || {}; S.step = S.step || 0;
+  const cid = clientId();
+  if (!S.set || S.cid !== cid) {
+    bar.classList.add('hide'); view.innerHTML = '<div class="screen"><p class="line">Getting your numbers…</p></div>';
+    try {
+      const r = await (await fetch(API + '/api/set?cid=' + cid)).json();
+      if (!r.set) throw new Error('no set');
+      S = { set: r.set, cid, step: 0, ans: {}, locked: {}, runs: [] }; save(a.id, S);
+    } catch {
+      view.innerHTML = '<div class="screen"><h2>Could not connect</h2><p class="line">This task needs the internet to start.</p><p><button class="btn2" id="retry">Try again</button></p></div>';
+      $('#retry').onclick = route; return;
+    }
+  }
+  if (location.hash.slice(1) !== a.id && !qs.get('a')) return;
+  S.ans = S.ans || {}; S.locked = S.locked || {}; S.step = S.step || 0; S.runs = S.runs || [];
   C = CASE(S.set);
   S.step = Math.min(S.step, A.screens.length + 1);
   task();
@@ -82,10 +93,9 @@ function startScreen() {
 }
 
 function questionScreen(sc) {
-  let n = 0;
-  return `<div class="screen">${sc.groups.map(g => `<h2>${esc(fill(g.title, C))}</h2>
+  return `<div class="screen">${labView()}${sc.groups.map((g, i) => `<div class="qn">Question ${i + 1}</div><h2>${esc(fill(g.title, C))}</h2>
     ${g.do ? `<div class="do">${esc(fill(g.do, C))}</div>` : ''}
-    ${g.q.map(id => { const q = A.questions.find(x => x.id === id); return `<div class="qn">Question ${++n}</div>` + field(q, false); }).join('')}`).join('')}
+    ${g.q.map(id => field(A.questions.find(x => x.id === id), false)).join('')}`).join('')}
     <div id="hints" aria-live="polite"></div></div>`;
 }
 
@@ -116,6 +126,7 @@ function wire() {
     S.ans[b.dataset.q] = b.dataset.o; save(A.id, S);
     view.querySelectorAll(`.opt[data-q="${b.dataset.q}"]`).forEach(x => x.setAttribute('aria-checked', String(x === b)));
   }));
+  wireLab();
   showHints();
   const re = $('#redo'); if (re) re.onclick = () => { delete S.card; delete S.result; save(A.id, S); task(); };
 }
@@ -150,10 +161,107 @@ $('#next').onclick = () => {
 $('#back').onclick = () => { if (S.step > 0) { S.step--; save(A.id, S); task(); } };
 
 /* a random id for this browser, used only to limit how many times one task can be re-checked in a day */
+let memCid = '';
 function clientId() {
-  try { let c = localStorage.getItem('mi2:cid'); if (!c) { c = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => (b % 36).toString(36)).join(''); localStorage.setItem('mi2:cid', c); } return c; }
-  catch { return ''; }
+  const make = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), b => (b % 36).toString(36)).join('');
+  try { let c = localStorage.getItem('mi2:cid'); if (!c) { c = make(); localStorage.setItem('mi2:cid', c); } return c; }
+  catch { return memCid || (memCid = make()); }
 }
+/* ---------- the lab on top of the questions ---------- */
+const LAB = {
+  pendulum: {
+    title: 'Pendulum lab',
+    controls: () => `${slider('length', 'Length', 10, 100, 5, 25, 'cm')}${slider('mass', 'Mass', 50, 500, 50, 100, 'g')}<button class="btn2" id="labrun" type="button">Run</button>`,
+    run: v => ({ length: v.length, mass: v.mass }),
+    show: r => `<b>${r.time} s</b> for 10 swings at ${r.length} cm, ${r.mass} g`,
+    row: r => [`${r.length} cm`, `${r.mass} g`, `${r.time} s`], head: ['Length', 'Mass', '10 swings'],
+  },
+  dissolve: {
+    title: 'Salt lab',
+    controls: () => `<label class="ctl">Water<select id="lab_glasses"><option value="0.5">Half a glass</option><option value="1">One glass</option><option value="2">Two glasses</option></select></label>
+      ${slider('temp', 'Temperature', 20, 80, 10, 20, '°C')}
+      <label class="ctl chk"><input type="checkbox" id="lab_stir"> Stir</label><button class="btn2" id="labrun" type="button">Add salt</button>`,
+    run: v => ({ glasses: v.glasses, temp: v.temp, stir: v.stir }),
+    show: r => `<b>${r.spoons} spoons</b> dissolved. The next spoon stays at the bottom.`,
+    row: r => [({ 0.5: 'Half', 1: 'One', 2: 'Two' })[r.glasses] + ' glass', `${r.temp} °C${r.stir ? ', stirred' : ''}`, `${r.spoons} spoons`], head: ['Water', 'Conditions', 'Dissolved'],
+  },
+};
+const slider = (id, label, min, max, step, val, unit) =>
+  `<label class="ctl">${label} <output id="out_${id}">${val} ${unit}</output><input type="range" id="lab_${id}" min="${min}" max="${max}" step="${step}" value="${val}" data-unit="${unit}"></label>`;
+
+function labView() {
+  const k = A.lab && A.lab.kind;
+  if (!k) return '';
+  if (LAB[k]) {
+    const L = LAB[k];
+    return `<section class="labbox" aria-label="${L.title}"><h2>${L.title}</h2>
+      <div class="labctl">${L.controls()}</div><div class="labout" id="labout" aria-live="polite">Press the button to get a reading.</div>
+      <div id="labruns">${runsTable(L)}</div></section>`;
+  }
+  if (k === 'river') return `<section class="labbox" aria-label="River map"><h2>River map</h2>
+      <svg id="rivermap" viewBox="0 30 100 40" role="img" aria-label="A winding river on a map"></svg>
+      <div class="labctl">${slider('step', 'Divider step', 2, 10, 1, 10, 'km')}</div><div class="labout" id="labout" aria-live="polite"></div></section>`;
+  if (k === 'fence') return `<section class="labbox" aria-label="Field sketch"><h2>Try a field</h2>
+      <p class="muted2">You have <b>${C.P} m</b> of fence.</p>
+      <div class="labctl"><label class="ctl">Length (m)<input type="number" id="lab_l" inputmode="decimal" min="0" step="any" value=""></label>
+      <label class="ctl">Breadth (m)<input type="number" id="lab_b" inputmode="decimal" min="0" step="any" value=""></label></div>
+      <svg id="fencesvg" viewBox="0 0 100 60" role="img" aria-label="The field drawn to scale"></svg><div class="labout" id="labout" aria-live="polite"></div></section>`;
+  if (k === 'mixer') return `<section class="labbox" aria-label="Drink mixer"><h2>Drink mixer</h2>
+      <p class="muted2">Reference: <b>${C.ra} spoons</b> of sugar in <b>${C.rc} cups</b>.</p>
+      <div class="labctl">${slider('sugar', 'Sugar', 0, 60, 0.5, 0, 'spoons')}${slider('cups', 'Water', 1, 30, 1, 1, 'cups')}</div>
+      <div class="glass" id="glass" aria-hidden="true"><i></i></div><div class="labout" id="labout" aria-live="polite"></div></section>`;
+  return '';
+}
+function runsTable(L) {
+  const runs = (S.runs || []).filter(r => r.task === A.id).slice(-6);
+  if (!runs.length) return '';
+  return `<table class="runs"><thead><tr>${L.head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${runs.map(r => `<tr>${L.row(r).map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+function wireLab() {
+  const k = A && A.lab && A.lab.kind; if (!k || !$('.labbox')) return;
+  document.querySelectorAll('.labbox input[type=range]').forEach(el => {
+    const upd = () => { const o = $('#out_' + el.id.slice(4)); if (o) o.textContent = el.value + ' ' + el.dataset.unit; };
+    el.addEventListener('input', () => { upd(); drawLab(); }); upd();
+  });
+  document.querySelectorAll('.labbox input[type=number]').forEach(el => el.addEventListener('input', drawLab));
+  const b = $('#labrun');
+  if (b) b.onclick = async () => {
+    const L = LAB[k], v = { length: +($('#lab_length') || {}).value, mass: +($('#lab_mass') || {}).value, glasses: +($('#lab_glasses') || {}).value, temp: +($('#lab_temp') || {}).value, stir: !!($('#lab_stir') || {}).checked };
+    b.disabled = true; $('#labout').textContent = 'Running…';
+    try {
+      const res = await fetch(API + '/api/lab', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ task: A.id, cid: clientId(), inputs: L.run(v) }) });
+      const j = await res.json();
+      if (!j.ok) throw new Error(j.error || 'failed');
+      S.runs.push({ task: A.id, ...j }); S.runs = S.runs.slice(-12); save(A.id, S);
+      $('#labout').innerHTML = L.show(j); $('#labruns').innerHTML = runsTable(L);
+    } catch (e) { $('#labout').textContent = String(e.message || 'Could not run. Try again.'); }
+    b.disabled = false;
+  };
+  drawLab();
+}
+function drawLab() {
+  const k = A.lab.kind, out = $('#labout');
+  if (k === 'river') {
+    const step = +$('#lab_step').value, pts = river(S.set), jp = walk(S.set, step);
+    const p = a => a.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+    $('#rivermap').innerHTML = `<rect x="0" y="30" width="100" height="40" fill="var(--chip)"/><polyline points="${p(pts.filter((_, i) => i % 4 === 0))}" fill="none" stroke="#2f7fd1" stroke-width="1.6"/>
+      <polyline points="${p(jp)}" fill="none" stroke="var(--ink)" stroke-width=".5" stroke-dasharray="1.2 1"/>${jp.map(([x, y]) => `<circle cx="${x}" cy="${y}" r=".9" fill="var(--accent)"/>`).join('')}`;
+    out.innerHTML = `${jp.length - 1} steps of ${step} km: length <b>${(jp.length - 1) * step} km</b>`;
+  } else if (k === 'fence') {
+    const l = +$('#lab_l').value, b = +$('#lab_b').value, s = 52 / Math.max(C.P / 2, 1);
+    if (l > 0 && b > 0) {
+      const w = Math.min(l * s, 96), h = Math.min(b * s, 56);
+      $('#fencesvg').innerHTML = `<rect x="2" y="2" width="${w}" height="${h}" fill="var(--chip)" stroke="var(--accent)" stroke-width="1.2"/>`;
+      const used = 2 * (l + b);
+      out.innerHTML = `Fence used: <b>${+used.toFixed(2)} m</b> of ${C.P} m · Area: <b>${+(l * b).toFixed(2)} m²</b> ${Math.abs(used - C.P) < 0.005 ? '✓' : used > C.P ? '(too much fence)' : '(some fence left)'}`;
+    } else { $('#fencesvg').innerHTML = ''; out.textContent = 'Type a length and a breadth.'; }
+  } else if (k === 'mixer') {
+    const sg = +$('#lab_sugar').value, cu = +$('#lab_cups').value, per = sg / cu, d = per - C.r;
+    $('#glass').firstElementChild.style.opacity = String(Math.min(1, 0.15 + per / 6));
+    out.innerHTML = `${sg} spoons in ${cu} cups: <b>${Math.abs(d) < 0.005 ? 'tastes the same' : d > 0 ? 'sweeter than the reference' : 'less sweet than the reference'}</b>`;
+  }
+}
+
 /* ---------- check ---------- */
 function checkScreen() {
   if (S.card && S.result) return resultView(S.result);
@@ -193,17 +301,6 @@ function resultView(j) {
       <button class="btn2 ghost" id="redo">Change answers</button></p></div>`;
 }
 
-/* ---------- paper worksheet (no device) ---------- */
-function printSheet(a) {
-  A = a; C = CASE(Number(new URLSearchParams(location.search).get('set')) || 47); bar.classList.add('hide');
-  const line = q => q.type === 'text' ? '<div style="border-bottom:1px solid #999;height:30px"></div><div style="border-bottom:1px solid #999;height:30px"></div>'
-    : q.type === 'number' ? `<span style="display:inline-block;border-bottom:1px solid #999;width:140px">&nbsp;</span> ${esc(q.unit || '')}`
-    : q.options.map(o => '☐ ' + esc(o)).join(' &nbsp; ');
-  view.innerHTML = `<div class="screen"><p class="muted2">Name: ______________ &nbsp; Class: ____ &nbsp; Set number: ____</p><h2>${esc(a.title)}</h2>
-    <p>${esc(fill(a.hook, C))}</p><p class="muted2">You need: ${a.materials.map(m => esc(fill(m, C))).join(' · ')}</p>
-    ${a.screens.map(s => `<h3>${esc(fill(s.title, C))}</h3>${s.do ? `<p><i>${esc(fill(s.do, C))}</i></p>` : ''}${s.q.map(id => { const q = a.questions.find(x => x.id === id); return `<div class="fld"><b>${esc(fill(q.label, C))}</b><br>${line(q)}</div>`; }).join('')}`).join('')}
-    <p class="no-print"><button class="btn2" onclick="print()">Print</button></p></div>`;
-}
 route();
 </script>
 </body>

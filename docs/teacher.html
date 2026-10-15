@@ -23,7 +23,7 @@ ul.s li{margin:2px 0}
   <div class="topbar no-print"><a class="brand" href="./">Measure It</a><span class="sp"></span><a class="muted2" href="card.html">Check a code</a></div>
   <h1>For teachers</h1>
   <ul class="s">
-    <li>Send a task link. Students do it at home.</li>
+    <li>Send a task link. Students do it on a phone or laptop. Nothing to buy.</li>
     <li>They get a code. <a href="card.html">Check it here.</a> Nothing to mark.</li>
     <li>A code means their numbers agree and their sentence makes sense. It cannot prove the activity was done.</li>
   </ul>
@@ -39,7 +39,6 @@ document.getElementById('list').innerHTML = ASSIGNMENTS.map((a, i) => {
   const t = TEACHER[a.id], link = base + '#' + a.id;
   return `<details class="t" ${i === 0 ? 'open' : ''}><summary>Grade ${a.grade} ${a.subject}: ${esc(a.title)} <span class="muted2">· ${a.minutes} min</span></summary>
     <div class="links no-print"><button class="btn2 ghost" data-copy="${esc(link)}">Copy link</button>
-      <a class="btn2 ghost" style="text-decoration:none;display:inline-flex;align-items:center" href="./?print&a=${a.id}" target="_blank">Printable sheet</a>
       <a class="btn2 ghost" style="text-decoration:none;display:inline-flex;align-items:center" href="book.html?a=${a.id}" target="_blank">Textbook page</a></div>
     <div class="lbl">Expect</div><p>${esc(t.answers)}</p>
     <div class="lbl">Levels</div><ul class="s">${t.rubric.map(([k, v]) => `<li><b>${esc(k)}:</b> ${esc(v)}</li>`).join('')}</ul>

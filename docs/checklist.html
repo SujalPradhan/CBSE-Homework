@@ -24,38 +24,50 @@ table{font-size:14px}
 
   <details class="t" open><summary>What Anand asked for</summary>
     <ul class="s">
-      <li>Practical tasks are fine. They must be <b>online</b>.</li>
+      <li>Practical thinking is fine. It must be <b>online</b>.</li>
       <li>The teacher must have <b>no extra load</b>. A system verifies.</li>
       <li>Students may use AI or work together and still learn.</li>
     </ul>
   </details>
 
-  <details class="t" open><summary>How a result is decided</summary>
+  <details class="t" open><summary>How it works</summary>
     <ul class="s">
-      <li>Measured numbers must be plausible.</li>
-      <li>Calculated numbers must agree with the student’s own measurements.</li>
-      <li>“Use your number on a new case” answers are checked against the student’s own set number.</li>
+      <li>Everything is done on the page. There is a small lab or map, then short questions in order. Nothing to buy or find.</li>
+      <li>Each browser gets its own set number from the checker. It picks the student’s own numbers. In the pendulum and salt labs it also picks hidden constants, so a friend’s readings do not fit.</li>
+      <li>Numbers are checked against the student’s own lab readings and against fresh cases made from their set.</li>
       <li>Choices can block a top result but never grant one.</li>
       <li>One sentence is checked by an AI for meaning. It can lower the result, never raise it.</li>
       <li>The result is a signed code. Nothing is stored.</li>
     </ul>
   </details>
 
-  <details class="t"><summary>What was tested (14 Oct 2026)</summary>
+  <details class="t"><summary>Why a student learns even with AI or a friend</summary>
+    <ul class="s">
+      <li>The numbers come from <b>your</b> lab. The quickest way to get them is to run it and look.</li>
+      <li>A guess comes first, then a reading. The surprise is the learning.</li>
+      <li>Build tasks have many right answers. Friends compare different ones and talk about why both work.</li>
+      <li>Copying a friend’s numbers or an AI’s textbook answer gives wrong results for your set.</li>
+    </ul>
+  </details>
+
+  <details class="t"><summary>What was tested (15 Oct 2026)</summary>
     <p class="muted">Small test set written by us. No real students yet.</p>
     <table>
       <tr><th>Test</th><th>Result</th></tr>
-      <tr><td>30 labelled sheets, 5 tasks</td><td>All as expected: honest sheets Got it; shallow, wrong, keyword and injected sheets never Got it</td></tr>
-      <tr><td>Red-team, 41 checks</td><td>No crashes. No forged or upgraded codes. All 6 injection attempts failed.</td></tr>
-      <tr><td>Fixed after the red-team</td><td>Wrong choices now block Got it. Retry cap no longer resets with the set number. Set number is signed into the code. Tighter fresh-case tolerance.</td></tr>
+      <tr><td>Answer rules: 5 tasks × all 90 set numbers</td><td>An honest sheet passes every rule for every set</td></tr>
+      <tr><td>Live checker: 30 labelled sheets, 5 tasks</td><td>All as expected: honest sheets Got it; shallow, wrong, keyword and injected sheets never Got it</td></tr>
+      <tr><td>Browser: all 5 tasks on a phone-width screen</td><td>Lab run, fill, check and result all work</td></tr>
+      <tr><td>Small model with no lab access</td><td>River, pendulum, salt and mixer: not Got it. <b>Fence: Got it</b> (see below)</td></tr>
+      <tr><td>Another student’s readings</td><td>Not accepted</td></tr>
     </table>
-    <p class="muted2">Model: GPT-4.1-mini. The smaller nano model was too noisy.</p>
+    <p class="muted2">Model: GPT-4.1-mini, for the one sentence only.</p>
   </details>
 
   <details class="t"><summary>What it cannot do</summary>
     <ul class="s">
-      <li><b>It cannot prove the activity was done.</b> An invented but consistent sheet reached Got it on 5 of 5 tasks.</li>
-      <li>A student can learn the right answer by re-checking many times. A daily cap slows this down.</li>
+      <li><b>It cannot stop a script or agent.</b> One that drives the page can run the lab and pass. The lab still runs and every number is shown.</li>
+      <li><b>The fence task is pure maths.</b> A model passes it with no lab. It teaches the idea only if the student does the building.</li>
+      <li>Re-checking many times can reveal which answers are right. A daily cap slows this.</li>
       <li>A lightly reworded copy gets a different code.</li>
       <li>A teacher who wants certainty can ask the 2-minute check on the <a href="teacher.html">teacher page</a>.</li>
     </ul>
@@ -75,8 +87,8 @@ table{font-size:14px}
   <details class="t"><summary>Checklist for a new task</summary>
     <ul class="s">
       <li><span class="k m">MUST</span>Names its NCERT chapter and activity.</li>
-      <li><span class="k m">MUST</span>One step only the student can do.</li>
-      <li><span class="k m">MUST</span>Safe, private, and uses things found at home.</li>
+      <li><span class="k m">MUST</span>One step only the student’s own lab or numbers can give.</li>
+      <li><span class="k m">MUST</span>Online only: no object to find or buy.</li>
       <li><span class="k m">MUST</span>Works with no teacher effort.</li>
       <li><span class="k">GOOD</span>Under 25 minutes, readable by a Grade 6 student.</li>
       <li><span class="k">GOOD</span>Wrong answers do not give away the right one.</li>
